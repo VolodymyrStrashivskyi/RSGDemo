@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(unity --version)",
+      "Bash(unity command:*)",
+      "Bash(unity pipeline editors:*)"
+    ]
+  }
+}
