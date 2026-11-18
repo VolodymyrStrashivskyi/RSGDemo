@@ -52,8 +52,13 @@ Assets/_Project/
 ├── Develop/                      # УВЕСЬ код проєкту
 │   ├── Editor/                   # Editor-only (EntryPointSceneAutoLoader)
 │   └── Runtime/                  # Код, що потрапляє в білд
-│       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/)
-│       ├── Gameplay/             # Механіка: шланги, машина, гідрант, вогонь, гравець
+│       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/, Input/)
+│       ├── Data/Configs/         # Класи всіх ScriptableObject-конфігів (не в папках фіч)
+│       ├── Gameplay/             # Фічі-модулі прямо тут, без папки Features/
+│       │   ├── Firefighter/      # Модуль пожежника: координатор (інпут + синхронізація) у корені,
+│       │   │                     #   під-фічі Body/, Camera/, у кожної своя Factory/
+│       │   ├── FireTruck/, Hydrant/, Street/   # Кожна з Factory/
+│       │   └── Level/            # WorldTag (точки спавну)
 │       ├── Infrastructure/       # Точки входу; DI/ — LifetimeScope-и
 │       └── Utils/                # Статичні розширення без стану
 ├── Prefabs/                      # RootLifetimeScope.prefab та префаби гри
