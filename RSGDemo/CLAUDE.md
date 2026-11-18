@@ -52,11 +52,14 @@ Assets/_Project/
 ├── Develop/                      # УВЕСЬ код проєкту
 │   ├── Editor/                   # Editor-only (EntryPointSceneAutoLoader)
 │   └── Runtime/                  # Код, що потрапляє в білд
-│       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/, Input/)
+│       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/, Input/, Raycast/)
 │       ├── Data/Configs/         # Класи всіх ScriptableObject-конфігів (не в папках фіч)
 │       ├── Gameplay/             # Фічі-модулі прямо тут, без папки Features/
 │       │   ├── Firefighter/      # Модуль пожежника: координатор (інпут + синхронізація) у корені,
-│       │   │                     #   під-фічі Body/, Camera/, у кожної своя Factory/
+│       │   │                     #   під-фічі Body/, Camera/, Interaction/ (сканер цілей), у кожної своя Factory/
+│       │   ├── Interaction/      # IInteractable — контракт для всього, з чим взаємодіє гравець
+│       │   ├── House/Doors/      # Модуль будинку; двері (IInteractable)
+│       │   ├── UI/Hud/           # Canvas, приціл (View + Presenter), Factory/
 │       │   ├── FireTruck/, Hydrant/, Street/   # Кожна з Factory/
 │       │   └── Level/            # WorldTag (точки спавну)
 │       ├── Infrastructure/       # Точки входу; DI/ — LifetimeScope-и

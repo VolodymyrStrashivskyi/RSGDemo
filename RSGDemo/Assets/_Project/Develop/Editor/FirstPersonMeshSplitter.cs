@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace _Project.Develop.Editor
 {
-    // Від першої особи камера бачить лише руки, а решта тіла лежить на шарі, який вона не рендерить.
-    // Модель — один скінований меш, тому ріжемо його за кістками на два меші з тим самим скелетом.
-    // Запускати знову після кожного переімпорту Firefighter.fbx.
     public static class FirstPersonMeshSplitter
     {
         private const string MENU_PATH = "Tools/Firefighter/Split First Person Mesh";
@@ -63,7 +60,6 @@ namespace _Project.Develop.Editor
 
             for (int vertex = 0; vertex < bonesPerVertex.Length; vertex++)
             {
-                // Ваги відсортовані за спаданням: перша — домінантна кістка вершини.
                 if (bonesPerVertex[vertex] > 0)
                     isHandVertex[vertex] = _handBoneNames.Contains(bones[weights[weightIndex].boneIndex].name);
 
@@ -146,7 +142,6 @@ namespace _Project.Develop.Editor
             return result;
         }
 
-        // Існуючий ассет заповнюємо на місці: GUID лишається, посилання з префаба не ламаються.
         private static Mesh LoadOrCreateMesh(string name)
         {
             string path = $"{OUTPUT_FOLDER}/{name}.asset";

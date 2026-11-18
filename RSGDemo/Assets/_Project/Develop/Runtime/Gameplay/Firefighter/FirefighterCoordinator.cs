@@ -2,6 +2,7 @@ using System;
 using _Project.Develop.Runtime.Common.Input;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera;
+using _Project.Develop.Runtime.Gameplay.Firefighter.Interaction;
 using UnityEngine;
 using VContainer.Unity;
 
@@ -10,12 +11,16 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
     public class FirefighterCoordinator : IFirefighterCoordinator, ITickable, ILateTickable, IDisposable
     {
         private readonly IInputService _inputService;
+        private readonly IInteractionScanner _interactionScanner;
 
         private FirefighterBody _body;
         private FirstPersonCamera _camera;
 
-        public FirefighterCoordinator(IInputService inputService) =>
+        public FirefighterCoordinator(IInputService inputService, IInteractionScanner interactionScanner)
+        {
             _inputService = inputService;
+            _interactionScanner = interactionScanner;
+        }
 
         public bool IsBound => _body != null && _camera != null;
 
@@ -45,6 +50,11 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
 
             if (_inputService.IsJumpPressed)
                 _body.Jump();
+
+            _interactionScanner.Scan(_camera.ViewRay);
+
+            if (_inputService.IsInteractPressed && _interactionScanner.HasTarget)
+                _interactionScanner.Current.Interact(_body.transform);
         }
 
         public void LateTick()

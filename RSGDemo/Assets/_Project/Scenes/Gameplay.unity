@@ -505,6 +505,8 @@ MonoBehaviour:
   _factoryConfig: {fileID: 11400000, guid: b46ff1ecd5099214f9d3333726ac7640, type: 2}
   _firefighterConfig: {fileID: 11400000, guid: 9324463b0a6a4e1439e5b37fbc62455d, type: 2}
   _cameraConfig: {fileID: 11400000, guid: 002529ec9564dd54aa7794f4d2a7c32a, type: 2}
+  _interactionConfig: {fileID: 11400000, guid: f9ebd419a8d491942937cfe17e959bbb, type: 2}
+  _crosshairConfig: {fileID: 11400000, guid: feb2ba2118e9e0d4ebaab0f20feea35c, type: 2}
   _worldTag: {fileID: 472227897}
 --- !u!1 &1421651622
 GameObject:

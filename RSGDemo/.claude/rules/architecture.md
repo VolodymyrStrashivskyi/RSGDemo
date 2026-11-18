@@ -51,6 +51,11 @@ Gameplay.unity
 - Простір імен `...Firefighter.Camera` перекриває `UnityEngine.Camera` — у модулі пишемо повне ім'я.
 - Від першої особи: тіло пожежника на шарі `FirstPersonHidden` (виключений з culling mask камери гравця), руки — окремий меш на `Default`.
   Після переімпорту `Firefighter.fbx` запусти `Tools/Firefighter/Split First Person Mesh`.
+- Інтеракція: усе, з чим взаємодіє гравець, реалізує `IInteractable` (`Gameplay/Interaction`). `InteractionScanner` щокадру
+  шукає ціль променем з камери через `IRaycastService`; координатор на E викликає `Interact()`. Гравець — на шарі `Player`,
+  який виключено з маски `InteractionConfig` (камера всередині капсули).
+- UI живе в `Gameplay/UI/`: View (MonoBehaviour) + Presenter (C#-клас, підписка в `Bind`, відписка в `Dispose`). HUD створює `HudFactory`.
+- Логіка будинку (`HouseInterior.prefab`) — у модулі `Gameplay/House/` (двері — `House/Doors/`).
 - Сповіщення між частинами — `event Action` на конкретних класах. Без глобального EventBus.
 - Новий `*LifetimeScope.cs`: VContainer одразу перезаписує його шаблоном — перечитай файл
   після створення і запиши вміст ще раз (див. скіл `vcontainer`).

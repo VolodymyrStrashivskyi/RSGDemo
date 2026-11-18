@@ -26,6 +26,8 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
 
         public Quaternion PlanarRotation => Quaternion.Euler(0f, _yaw, 0f);
 
+        public Ray ViewRay => new Ray(transform.position, transform.forward);
+
         public void Look(Vector2 delta)
         {
             _yaw += delta.x * _config.Sensitivity;

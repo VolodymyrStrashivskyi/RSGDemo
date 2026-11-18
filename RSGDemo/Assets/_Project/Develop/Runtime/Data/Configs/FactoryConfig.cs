@@ -1,5 +1,6 @@
 using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera;
+using _Project.Develop.Runtime.Gameplay.UI.Hud;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Data.Configs
@@ -12,5 +13,6 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField] public GameObject HydrantPrefab { get; private set; }
         [field: SerializeField] public FirefighterBody FirefighterPrefab { get; private set; }
         [field: SerializeField] public FirstPersonCamera CameraPrefab { get; private set; }
+        [field: SerializeField] public HudView HudPrefab { get; private set; }
     }
 }

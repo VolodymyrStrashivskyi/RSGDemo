@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Common.Input;
+using _Project.Develop.Runtime.Common.Raycast;
 using _Project.Develop.Runtime.Common.SceneManagement;
 using VContainer;
 using VContainer.Unity;
@@ -11,6 +12,7 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
         {
             builder.Register<ISceneLoader, SceneLoader>(Lifetime.Singleton);
             builder.Register<IInputService, InputService>(Lifetime.Singleton);
+            builder.Register<IRaycastService, RaycastService>(Lifetime.Singleton);
         }
     }
 }

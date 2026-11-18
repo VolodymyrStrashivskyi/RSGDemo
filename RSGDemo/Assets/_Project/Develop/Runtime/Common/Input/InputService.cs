@@ -18,6 +18,8 @@ namespace _Project.Develop.Runtime.Common.Input
 
         public bool IsJumpPressed => _gameInput.Player.Jump.WasPressedThisFrame();
 
+        public bool IsInteractPressed => _gameInput.Player.Interact.WasPressedThisFrame();
+
         public void EnablePlayerInput() =>
             _gameInput.Player.Enable();
 

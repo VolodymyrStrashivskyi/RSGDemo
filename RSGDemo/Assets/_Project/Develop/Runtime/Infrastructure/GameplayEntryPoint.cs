@@ -4,6 +4,9 @@ using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera.Factory;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Factory;
+using _Project.Develop.Runtime.Gameplay.UI.Hud;
+using _Project.Develop.Runtime.Gameplay.UI.Hud.Crosshair;
+using _Project.Develop.Runtime.Gameplay.UI.Hud.Factory;
 using _Project.Develop.Runtime.Gameplay.Hydrant.Factory;
 using _Project.Develop.Runtime.Gameplay.Street.Factory;
 using Cysharp.Threading.Tasks;
@@ -20,6 +23,8 @@ namespace _Project.Develop.Runtime.Infrastructure
         private IFirefighterFactory _firefighterFactory;
         private IFirstPersonCameraFactory _cameraFactory;
         private IFirefighterCoordinator _firefighterCoordinator;
+        private IHudFactory _hudFactory;
+        private CrosshairPresenter _crosshairPresenter;
 
         [Inject]
         public void Construct(
@@ -28,7 +33,9 @@ namespace _Project.Develop.Runtime.Infrastructure
             IHydrantFactory hydrantFactory,
             IFirefighterFactory firefighterFactory,
             IFirstPersonCameraFactory cameraFactory,
-            IFirefighterCoordinator firefighterCoordinator)
+            IFirefighterCoordinator firefighterCoordinator,
+            IHudFactory hudFactory,
+            CrosshairPresenter crosshairPresenter)
         {
             _streetFactory = streetFactory;
             _fireTruckFactory = fireTruckFactory;
@@ -36,6 +43,8 @@ namespace _Project.Develop.Runtime.Infrastructure
             _firefighterFactory = firefighterFactory;
             _cameraFactory = cameraFactory;
             _firefighterCoordinator = firefighterCoordinator;
+            _hudFactory = hudFactory;
+            _crosshairPresenter = crosshairPresenter;
         }
 
         public void Start() =>
@@ -50,6 +59,10 @@ namespace _Project.Develop.Runtime.Infrastructure
             FirefighterBody body = await _firefighterFactory.CreateAsync();
             FirstPersonCamera camera = await _cameraFactory.CreateAsync(body.HeadPoint);
             _firefighterCoordinator.Bind(body, camera);
+
+            HudView hud = await _hudFactory.CreateAsync();
+            _crosshairPresenter.Bind(hud.Crosshair);
+
             _firefighterCoordinator.Enable();
         }
     }
