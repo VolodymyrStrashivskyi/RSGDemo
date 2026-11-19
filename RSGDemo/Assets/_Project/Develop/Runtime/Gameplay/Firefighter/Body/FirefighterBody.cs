@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Interaction;
+using _Project.Develop.Runtime.Gameplay.WaterStream;
 using UnityEngine;
 using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
 {
     [RequireComponent(typeof(CharacterController))]
-    public class FirefighterBody : MonoBehaviour
+    public class FirefighterBody : MonoBehaviour, IWaterPushable
     {
         private const float GROUNDED_VERTICAL_VELOCITY = -2f;
 
@@ -23,6 +24,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         private Vector3 _moveDirection;
         private bool _isRunning;
         private bool _isJumping;
+        private Vector3 _pushVelocity;
         private float _verticalVelocity;
         private float _airTime;
 
@@ -64,6 +66,12 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         public void RemoveConstraint(IMovementConstraint constraint) =>
             _constraints.Remove(constraint);
 
+        public void AddWaterPush(Vector3 impulse)
+        {
+            Vector3 planarImpulse = new Vector3(impulse.x, 0f, impulse.z);
+            _pushVelocity = Vector3.ClampMagnitude(_pushVelocity + planarImpulse / _config.Mass, _config.MaxPushSpeed);
+        }
+
         private void Update()
         {
             float speed = _isRunning ? _config.RunSpeed : _config.WalkSpeed;
@@ -77,7 +85,9 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
 
             _verticalVelocity += _config.Gravity * Time.deltaTime;
 
-            Vector3 velocity = horizontalVelocity + Vector3.up * _verticalVelocity;
+            DampPush();
+
+            Vector3 velocity = horizontalVelocity + _pushVelocity + Vector3.up * _verticalVelocity;
             Vector3 displacement = Constrain(velocity * Time.deltaTime);
             _characterController.Move(displacement);
 
@@ -86,6 +96,12 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
             bool isAirborne = _isJumping || _airTime > _config.AirborneAnimationDelay;
             _animator.SetSpeed(GetPlanarSpeed(displacement));
             _animator.SetAirborne(isAirborne);
+        }
+
+        private void DampPush()
+        {
+            float drag = _characterController.isGrounded ? _config.PushGroundDrag : _config.PushAirDrag;
+            _pushVelocity *= Mathf.Exp(-drag * Time.deltaTime);
         }
 
         private Vector3 Constrain(Vector3 displacement)

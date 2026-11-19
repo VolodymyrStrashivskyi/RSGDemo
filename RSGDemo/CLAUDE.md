@@ -63,6 +63,7 @@ Assets/_Project/
 │       │   ├── Interaction/      # IInteractable, а також Grabber/GrabAnchor/IGrabbable — що гравець тримає в руках
 │       │   ├── WaterSupply/      # Модель ланцюга води (чистий C#): гідрант → лінія → насос ← бак, збої з ініціатором
 │       │   ├── Hoses/            # Спільне для шлангів (фізика мотузки, меш, муфта, сокет); Supply/ — жовтий шланг
+│       │   ├── WaterStream/      # Візуал струменя води: балістична дуга, меш, бризки, сплеск, калюжа (гідрант, згодом ствол)
 │       │   ├── House/Doors/      # Модуль будинку; двері (IInteractable)
 │       │   ├── UI/Hud/           # Canvas, приціл (View + Presenter), Factory/
 │       │   ├── FireTruck/, Hydrant/, Street/   # Кожна з Factory/

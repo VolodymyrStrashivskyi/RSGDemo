@@ -62,6 +62,9 @@ Gameplay.unity
   `WaterSupplyChain` тікає і збирає збої `SupplyFailure` з ініціатором для Blame). View (шланг, вентиль, HUD) лише викликають методи моделі.
 - Шланги: спільне в `Gameplay/Hoses/` (`HoseRope` — verlet-фізика шланга з тертям об землю, `HoseTubeMesh`, `HoseCoupling`, `HoseSocket`, `HoseLeash`), конкретний шланг — під-фіча (`Hoses/Supply/`).
   Меш шланга будується у світових координатах: корінь префаба шланга стоїть у нулі.
+- Струмінь води: `Gameplay/WaterStream/` — `WaterStreamView` (трасує балістичну дугу через `IRaycastService`, будує меш `WaterStreamMesh` з шейдером `Project/Water Stream`, керує бризками, туманом, сплеском і калюжею) знає лише `Flow` (0..1+, тиск); хто подає воду, задає `Flow`.
+  Гідрант: `HydrantOutflow` вмикає струмінь, коли гідрант відкритий, а `SupplyLine` не під'єднана (сплеск на старті, спад тиску при закритті). Параметри — `WaterStreamConfig`.
+  Струмінь штовхає те, у що влучив: `IWaterPushable` (тіло пожежника — швидкість поштовху з масою й тертям у `FirefighterConfig`), інакше `Rigidbody`. Гравець (шар `Player`) входить у `CollisionMask` струменя. Калюжа — `PuddleView` + `PuddleSimulation`: сітка глибини води на землі (меш облягає землю один раз через `TryRaycastFarthest` — найнижче влучання, щоб гідрант, машина й шланг не піднімали калюжу, вода стікає вниз, тонкий шар зупиняється, висихає), струмінь лише доливає воду в точку падіння; шейдер `Project/Water Puddle` читає глибину з текстури `_WetnessTex`, брижі — від `_ImpactPosition`.
 - UI живе в `Gameplay/UI/`: View (MonoBehaviour) + Presenter (C#-клас, підписка в `Bind`, відписка в `Dispose`). HUD створює `HudFactory`.
 - Логіка будинку (`HouseInterior.prefab`) — у модулі `Gameplay/House/` (двері — `House/Doors/`).
 - Сповіщення між частинами — `event Action` на конкретних класах. Без глобального EventBus.

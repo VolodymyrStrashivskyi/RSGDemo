@@ -28,6 +28,7 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
         [SerializeField] private CrosshairConfig _crosshairConfig;
         [SerializeField] private WaterSupplyConfig _waterSupplyConfig;
         [SerializeField] private SupplyHoseConfig _supplyHoseConfig;
+        [SerializeField] private WaterStreamConfig _waterStreamConfig;
         [SerializeField] private WorldTag _worldTag;
 
         protected override void Configure(IContainerBuilder builder)
@@ -39,6 +40,7 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.RegisterInstance(_crosshairConfig);
             builder.RegisterInstance(_waterSupplyConfig);
             builder.RegisterInstance(_supplyHoseConfig);
+            builder.RegisterInstance(_waterStreamConfig);
             builder.RegisterComponent(_worldTag);
 
             builder.Register<IStreetFactory, StreetFactory>(Lifetime.Singleton);
