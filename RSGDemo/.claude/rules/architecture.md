@@ -54,6 +54,14 @@ Gameplay.unity
 - Інтеракція: усе, з чим взаємодіє гравець, реалізує `IInteractable` (`Gameplay/Interaction`). `InteractionScanner` щокадру
   шукає ціль променем з камери через `IRaycastService`; координатор на E викликає `Interact()`. Гравець — на шарі `Player`,
   який виключено з маски `InteractionConfig` (камера всередині капсули).
+- Тримання предметів: `Grabber` (що в руках) + `GrabAnchor` (точка перед грудьми на тілі гравця, `Player.prefab`) + `IGrabbable` — у `Gameplay/Interaction`.
+  Предмет з `IHandGrips` (точки хвату) координатор передає в `FirefighterHands`: власний `TwoBoneIk` (риг Generic, без Animation Rigging) у `LateUpdate` тягне руки до хвату поверх анімації.
+  E без цілі кидає предмет. Предмет у руках може обмежувати рух тіла, якщо реалізує `IMovementConstraint` (`Firefighter/Body`);
+  координатор додає/знімає обмеження за подіями `Grabber`.
+- Подача води: модель у `Gameplay/WaterSupply/` — чистий C# без MonoBehaviour (`HydrantSource` → `SupplyLine` → `Pump` ← `WaterTank`,
+  `WaterSupplyChain` тікає і збирає збої `SupplyFailure` з ініціатором для Blame). View (шланг, вентиль, HUD) лише викликають методи моделі.
+- Шланги: спільне в `Gameplay/Hoses/` (`HoseRope` — verlet-фізика шланга з тертям об землю, `HoseTubeMesh`, `HoseCoupling`, `HoseSocket`, `HoseLeash`), конкретний шланг — під-фіча (`Hoses/Supply/`).
+  Меш шланга будується у світових координатах: корінь префаба шланга стоїть у нулі.
 - UI живе в `Gameplay/UI/`: View (MonoBehaviour) + Presenter (C#-клас, підписка в `Bind`, відписка в `Dispose`). HUD створює `HudFactory`.
 - Логіка будинку (`HouseInterior.prefab`) — у модулі `Gameplay/House/` (двері — `House/Doors/`).
 - Сповіщення між частинами — `event Action` на конкретних класах. Без глобального EventBus.

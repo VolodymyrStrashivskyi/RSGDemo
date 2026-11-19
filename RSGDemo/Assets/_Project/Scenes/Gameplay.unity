@@ -507,6 +507,8 @@ MonoBehaviour:
   _cameraConfig: {fileID: 11400000, guid: 002529ec9564dd54aa7794f4d2a7c32a, type: 2}
   _interactionConfig: {fileID: 11400000, guid: f9ebd419a8d491942937cfe17e959bbb, type: 2}
   _crosshairConfig: {fileID: 11400000, guid: feb2ba2118e9e0d4ebaab0f20feea35c, type: 2}
+  _waterSupplyConfig: {fileID: 11400000, guid: 2c270fa8b1a560f4fab23679d9788cf1, type: 2}
+  _supplyHoseConfig: {fileID: 11400000, guid: bda143272e9bc1244a3ed118c8301499, type: 2}
   _worldTag: {fileID: 472227897}
 --- !u!1 &1421651622
 GameObject:

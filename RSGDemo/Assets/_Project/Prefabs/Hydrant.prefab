@@ -72,15 +72,24 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8004474682277292196}
     - targetCorrespondingSourceObject: {fileID: -8905829277286760708, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4787174113991938920}
     - targetCorrespondingSourceObject: {fileID: 2936175690158267344, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1150664905006321622}
+    - targetCorrespondingSourceObject: {fileID: 2936175690158267344, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1291537309786133105}
     - targetCorrespondingSourceObject: {fileID: -831596642590534658, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5889154711050774461}
+    - targetCorrespondingSourceObject: {fileID: -831596642590534658, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6952293682457722151}
   m_SourcePrefab: {fileID: 100100000, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
 --- !u!1 &2335587561148153628 stripped
 GameObject:
@@ -108,6 +117,25 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.13500002, y: 0.21000001, z: 0.164}
   m_Center: {x: -0.067499995, y: 0, z: 0}
+--- !u!114 &6952293682457722151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2335587561148153628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ced8bf645bf524459e7dbadd08033e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Hoses.HoseSocket
+  _kind: 0
+  _attachPoint: {fileID: 4699032132567678923}
+--- !u!4 &4699032132567678923 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -7698218487182650583, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
+  m_PrefabInstance: {fileID: 6060789298271464674}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5797290180909584926 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8905829277286760708, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
@@ -136,6 +164,25 @@ CapsuleCollider:
   m_Height: 0.86
   m_Direction: 1
   m_Center: {x: 0, y: 0.43, z: 0}
+--- !u!1 &6403368875030254003 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
+  m_PrefabInstance: {fileID: 6060789298271464674}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8004474682277292196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6403368875030254003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 360377146cebff64ea32f2dafc4e47dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Hydrant.HydrantView
+  _socket: {fileID: 6952293682457722151}
+  _valve: {fileID: 1291537309786133105}
 --- !u!1 &8981123213621786418 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2936175690158267344, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
@@ -162,3 +209,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.105500005, y: 0.152, z: 0.152}
   m_Center: {x: 0.052749995, y: 0, z: 0}
+--- !u!114 &1291537309786133105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8981123213621786418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07b7348da9082be4ab9f5230659173ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Hydrant.HydrantValve
+  _localAxis: {x: 1, y: 0, z: 0}
+  _turns: 2
+  _turnTween:
+    duration: 0.8
+    ease: 4
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0

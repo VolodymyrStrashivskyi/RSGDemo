@@ -3,6 +3,7 @@ using _Project.Develop.Runtime.Common.Input;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Interaction;
+using _Project.Develop.Runtime.Gameplay.Interaction;
 using UnityEngine;
 using VContainer.Unity;
 
@@ -12,14 +13,19 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
     {
         private readonly IInputService _inputService;
         private readonly IInteractionScanner _interactionScanner;
+        private readonly Grabber _grabber;
 
         private FirefighterBody _body;
         private FirstPersonCamera _camera;
 
-        public FirefighterCoordinator(IInputService inputService, IInteractionScanner interactionScanner)
+        public FirefighterCoordinator(IInputService inputService, IInteractionScanner interactionScanner, Grabber grabber)
         {
             _inputService = inputService;
             _interactionScanner = interactionScanner;
+            _grabber = grabber;
+
+            _grabber.Grabbed += OnGrabbed;
+            _grabber.Released += OnReleased;
         }
 
         public bool IsBound => _body != null && _camera != null;
@@ -28,6 +34,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
         {
             _body = body;
             _camera = camera;
+            _grabber.Bind(body.GrabAnchor);
             Synchronize();
         }
 
@@ -53,8 +60,8 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
 
             _interactionScanner.Scan(_camera.ViewRay);
 
-            if (_inputService.IsInteractPressed && _interactionScanner.HasTarget)
-                _interactionScanner.Current.Interact(_body.transform);
+            if (_inputService.IsInteractPressed)
+                Interact();
         }
 
         public void LateTick()
@@ -67,8 +74,42 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
 
         public void Dispose()
         {
+            _grabber.Grabbed -= OnGrabbed;
+            _grabber.Released -= OnReleased;
             _inputService.DisablePlayerInput();
             SetCursorLocked(false);
+        }
+
+        private void Interact()
+        {
+            if (_interactionScanner.HasTarget)
+                _interactionScanner.Current.Interact(_body.transform);
+            else if (_grabber.IsHolding())
+                _grabber.Release();
+        }
+
+        private void OnGrabbed(IGrabbable item)
+        {
+            if (IsBound == false)
+                return;
+
+            if (item is IMovementConstraint constraint)
+                _body.AddConstraint(constraint);
+
+            if (item is IHandGrips grips)
+                _body.Hands.Hold(grips);
+        }
+
+        private void OnReleased(IGrabbable item)
+        {
+            if (IsBound == false)
+                return;
+
+            if (item is IMovementConstraint constraint)
+                _body.RemoveConstraint(constraint);
+
+            if (item is IHandGrips)
+                _body.Hands.Release();
         }
 
         private void Synchronize()

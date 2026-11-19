@@ -1,7 +1,6 @@
 using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Level;
 using Cysharp.Threading.Tasks;
-using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
@@ -20,7 +19,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hydrant.Factory
             _resolver = resolver;
         }
 
-        public UniTask<GameObject> CreateAsync() =>
+        public UniTask<HydrantView> CreateAsync() =>
             UniTask.FromResult(_resolver.Instantiate(_config.HydrantPrefab, _worldTag.HydrantPoint));
     }
 }

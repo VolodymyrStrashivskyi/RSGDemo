@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-Інструкції для Claude Code в цьому репозиторії. Спілкування, документи й коментарі — **українською**.
+Інструкції для Claude Code в цьому репозиторії. Спілкування й документи — **українською**.
+Усе, що потрапляє в гру чи редактор, — **англійською**: тексти UI, `Tooltip`, `Header`, назви меню, логи й повідомлення про помилки.
 
 ## Контекст проєкту
 
@@ -31,6 +32,8 @@ Unity **6000.5.3f1**, URP, PC (Windows).
 - **DI** — VContainer 1.19.0 (скіл `vcontainer`)
 - **Асинхронність** — UniTask 2.5.11, скрізь замість `Task` і корутин (скіл `unitask`)
 - **Анімації кодом** — PrimeTween 1.5.2, scoped registry `npmjs.org`, скоуп `com.kyrylokuzyk` (скіл `primetween`)
+- **UI-текст** — лише `TextMeshProUGUI` (`TMPro`, входить у `com.unity.ugui`); легасі `UnityEngine.UI.Text` не використовуємо. Ресурси TMP — `Assets/TextMesh Pro/`
+- **UI-спрайти** — генеровані в `Art/Textures/UI/` (`UI_RoundedRect` — 9-slice для панелей і смуг; заповнення смуги — через `anchorMax`, не `fillAmount`)
 - **Ввід** — новий Input System; `activeInputHandler` = New only, старий `UnityEngine.Input` кине виняток у рантаймі
 - **Керування редактором** — Unity CLI + пакет `com.unity.pipeline`
 - **Дані** — параметри механік (шланги, бак, тиск, вогонь) у ScriptableObject, без хардкоду
@@ -57,7 +60,9 @@ Assets/_Project/
 │       ├── Gameplay/             # Фічі-модулі прямо тут, без папки Features/
 │       │   ├── Firefighter/      # Модуль пожежника: координатор (інпут + синхронізація) у корені,
 │       │   │                     #   під-фічі Body/, Camera/, Interaction/ (сканер цілей), у кожної своя Factory/
-│       │   ├── Interaction/      # IInteractable — контракт для всього, з чим взаємодіє гравець
+│       │   ├── Interaction/      # IInteractable, а також Grabber/GrabAnchor/IGrabbable — що гравець тримає в руках
+│       │   ├── WaterSupply/      # Модель ланцюга води (чистий C#): гідрант → лінія → насос ← бак, збої з ініціатором
+│       │   ├── Hoses/            # Спільне для шлангів (фізика мотузки, меш, муфта, сокет); Supply/ — жовтий шланг
 │       │   ├── House/Doors/      # Модуль будинку; двері (IInteractable)
 │       │   ├── UI/Hud/           # Canvas, приціл (View + Presenter), Factory/
 │       │   ├── FireTruck/, Hydrant/, Street/   # Кожна з Factory/

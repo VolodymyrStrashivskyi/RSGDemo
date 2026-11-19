@@ -106,6 +106,51 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.0029279143, y: 0.672328, z: -0.048861027}
     m_Extent: {x: 0.40016186, y: 0.81795883, z: 0.40486312}
   m_DirtyAABB: 0
+--- !u!1 &4556178231005017669
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7816072331310335470}
+  - component: {fileID: 6309275568729297369}
+  m_Layer: 0
+  m_Name: GrabAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7816072331310335470
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4556178231005017669}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.69, z: 0.407}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1858321392109360743}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6309275568729297369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4556178231005017669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eded9319086ac8488f9db4098cadef5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Interaction.GrabAnchor
+  _carrier: {fileID: 1858321392109360743}
 --- !u!1 &5531652389501253429
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +194,7 @@ GameObject:
   - component: {fileID: 7332692727691074882}
   - component: {fileID: 5203084364725986790}
   - component: {fileID: 7888143498591889304}
+  - component: {fileID: 7499788047799004619}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -171,6 +217,7 @@ Transform:
   m_Children:
   - {fileID: 8076170435418493146}
   - {fileID: 163956727402432773}
+  - {fileID: 7816072331310335470}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &7332692727691074882
@@ -226,6 +273,62 @@ MonoBehaviour:
   _characterController: {fileID: 7332692727691074882}
   _animator: {fileID: 5203084364725986790}
   _headPoint: {fileID: 163956727402432773}
+  _grabAnchor: {fileID: 6309275568729297369}
+  _hands: {fileID: 7499788047799004619}
+--- !u!114 &7499788047799004619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6254516469900599130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1b943508439b764bb2f7db634869796, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Firefighter.Body.FirefighterHands
+  _leftUpperArm: {fileID: 5095724261165607506}
+  _leftLowerArm: {fileID: 7370340344506954702}
+  _leftHand: {fileID: 1157460927706982876}
+  _rightUpperArm: {fileID: 8897429912948895270}
+  _rightLowerArm: {fileID: 3691080286835060205}
+  _rightHand: {fileID: 4788862168074720270}
+  _leftElbowHint: {x: -0.6, y: -0.5, z: -0.2}
+  _rightElbowHint: {x: 0.6, y: -0.5, z: -0.2}
+  _leftBackOfHandAxis: {x: -1, y: 0, z: 0}
+  _rightBackOfHandAxis: {x: 1, y: 0, z: 0}
+  _gripTween:
+    duration: 0.25
+    ease: 9
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  _releaseTween:
+    duration: 0.2
+    ease: 8
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
 --- !u!1 &7402466585465462175
 GameObject:
   m_ObjectHideFlags: 0

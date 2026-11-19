@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using _Project.Develop.Runtime.Data.Configs;
+using _Project.Develop.Runtime.Gameplay.Interaction;
 using UnityEngine;
 using VContainer;
 
@@ -12,6 +14,10 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private FirefighterAnimator _animator;
         [SerializeField] private Transform _headPoint;
+        [SerializeField] private GrabAnchor _grabAnchor;
+        [SerializeField] private FirefighterHands _hands;
+
+        private readonly List<IMovementConstraint> _constraints = new List<IMovementConstraint>();
 
         private FirefighterConfig _config;
         private Vector3 _moveDirection;
@@ -25,6 +31,10 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
             _config = config;
 
         public Transform HeadPoint => _headPoint;
+
+        public GrabAnchor GrabAnchor => _grabAnchor;
+
+        public FirefighterHands Hands => _hands;
 
         public void Move(Vector3 direction, bool isRunning)
         {
@@ -45,6 +55,15 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         public void SetYaw(float yaw) =>
             transform.rotation = Quaternion.Euler(0f, yaw, 0f);
 
+        public void AddConstraint(IMovementConstraint constraint)
+        {
+            if (_constraints.Contains(constraint) == false)
+                _constraints.Add(constraint);
+        }
+
+        public void RemoveConstraint(IMovementConstraint constraint) =>
+            _constraints.Remove(constraint);
+
         private void Update()
         {
             float speed = _isRunning ? _config.RunSpeed : _config.WalkSpeed;
@@ -59,13 +78,37 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
             _verticalVelocity += _config.Gravity * Time.deltaTime;
 
             Vector3 velocity = horizontalVelocity + Vector3.up * _verticalVelocity;
-            _characterController.Move(velocity * Time.deltaTime);
+            Vector3 displacement = Constrain(velocity * Time.deltaTime);
+            _characterController.Move(displacement);
 
             _airTime = _characterController.isGrounded ? 0f : _airTime + Time.deltaTime;
 
             bool isAirborne = _isJumping || _airTime > _config.AirborneAnimationDelay;
-            _animator.SetSpeed(horizontalVelocity.magnitude);
+            _animator.SetSpeed(GetPlanarSpeed(displacement));
             _animator.SetAirborne(isAirborne);
+        }
+
+        private Vector3 Constrain(Vector3 displacement)
+        {
+            if (_constraints.Count == 0)
+                return displacement;
+
+            Vector3 currentPosition = transform.position;
+            Vector3 desiredPosition = currentPosition + new Vector3(displacement.x, 0f, displacement.z);
+
+            foreach (IMovementConstraint constraint in _constraints)
+                desiredPosition = constraint.Constrain(currentPosition, desiredPosition);
+
+            return new Vector3(desiredPosition.x - currentPosition.x, displacement.y, desiredPosition.z - currentPosition.z);
+        }
+
+        private float GetPlanarSpeed(Vector3 displacement)
+        {
+            if (Time.deltaTime <= 0f)
+                return 0f;
+
+            Vector3 planarDisplacement = new Vector3(displacement.x, 0f, displacement.z);
+            return planarDisplacement.magnitude / Time.deltaTime;
         }
     }
 }
