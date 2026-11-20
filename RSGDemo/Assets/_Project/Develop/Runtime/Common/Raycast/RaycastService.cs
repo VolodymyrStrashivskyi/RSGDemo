@@ -5,8 +5,20 @@ namespace _Project.Develop.Runtime.Common.Raycast
     public class RaycastService : IRaycastService
     {
         private const int MAX_HITS = 16;
+        private const int MAX_OVERLAPS = 8;
+        private const int IGNORE_RAYCAST_LAYER = 2;
+        private const string PROBE_NAME = "SphereProbe";
+        private const float MIN_STEP_RISE = 0.02f;
+
+        private static readonly Vector3[] _escapeDirections =
+        {
+            Vector3.right, Vector3.left, Vector3.forward, Vector3.back, Vector3.up, Vector3.down
+        };
 
         private readonly RaycastHit[] _hits = new RaycastHit[MAX_HITS];
+        private readonly Collider[] _overlaps = new Collider[MAX_OVERLAPS];
+
+        private SphereCollider _probe;
 
         public bool TryRaycast(Ray ray, float distance, LayerMask mask, out RaycastHit hit) =>
             Physics.Raycast(ray, out hit, distance, mask, QueryTriggerInteraction.Ignore);
@@ -34,6 +46,82 @@ namespace _Project.Develop.Runtime.Common.Raycast
 
             target = hit.collider.GetComponentInParent<T>();
             return target != null;
+        }
+
+        public bool TrySphereCast(Ray ray, float radius, float distance, LayerMask mask, out RaycastHit hit) =>
+            Physics.SphereCast(ray, radius, out hit, distance, mask, QueryTriggerInteraction.Ignore);
+
+        public bool TryPushOutSphere(Vector3 center, float radius, LayerMask mask, float stepHeight, out Vector3 freeCenter)
+        {
+            freeCenter = center;
+            int count = Physics.OverlapSphereNonAlloc(center, radius, _overlaps, mask, QueryTriggerInteraction.Ignore);
+
+            if (count == 0)
+                return false;
+
+            SphereCollider probe = GetProbe();
+            probe.radius = radius;
+            bool isPushed = false;
+
+            for (int i = 0; i < count; i++)
+            {
+                Collider other = _overlaps[i];
+                Transform otherTransform = other.transform;
+                Ray stepRay = new Ray(freeCenter + Vector3.up * stepHeight, Vector3.down);
+
+                bool isStep = other.Raycast(stepRay, out RaycastHit stepTop, stepHeight + radius)
+                    && stepTop.point.y > freeCenter.y - radius + MIN_STEP_RISE;
+
+                if (isStep)
+                {
+                    freeCenter.y = Mathf.Max(freeCenter.y, stepTop.point.y + radius);
+                    isPushed = true;
+                    continue;
+                }
+
+                if (Physics.ComputePenetration(probe, freeCenter, Quaternion.identity, other, otherTransform.position, otherTransform.rotation, out Vector3 direction, out float depth))
+                {
+                    freeCenter += direction * depth;
+                    isPushed = true;
+                }
+            }
+
+            return isPushed;
+        }
+
+        public bool TryEscapeHollow(Vector3 center, float radius, float distance, LayerMask mask, out Vector3 freeCenter)
+        {
+            freeCenter = center;
+            float nearest = float.MaxValue;
+            bool hitsBackfaces = Physics.queriesHitBackfaces;
+            Physics.queriesHitBackfaces = true;
+
+            foreach (Vector3 direction in _escapeDirections)
+            {
+                bool isInside = Physics.Raycast(center, direction, out RaycastHit hit, distance, mask, QueryTriggerInteraction.Ignore)
+                    && Vector3.Dot(hit.normal, direction) > 0f;
+
+                if (isInside && hit.distance < nearest)
+                {
+                    nearest = hit.distance;
+                    freeCenter = hit.point + direction * radius;
+                }
+            }
+
+            Physics.queriesHitBackfaces = hitsBackfaces;
+            return nearest < float.MaxValue;
+        }
+
+        private SphereCollider GetProbe()
+        {
+            if (_probe != null)
+                return _probe;
+
+            GameObject probeObject = new GameObject(PROBE_NAME) { layer = IGNORE_RAYCAST_LAYER, hideFlags = HideFlags.HideAndDontSave };
+            Object.DontDestroyOnLoad(probeObject);
+            _probe = probeObject.AddComponent<SphereCollider>();
+            _probe.isTrigger = true;
+            return _probe;
         }
     }
 }

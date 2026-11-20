@@ -6,7 +6,7 @@ namespace _Project.Develop.Runtime.Data.Configs
     [CreateAssetMenu(fileName = "WaterStreamConfig", menuName = "Configs/Water Stream Config")]
     public class WaterStreamConfig : ScriptableObject
     {
-        private const int DEFAULT_COLLISION_MASK = 129;
+        private const int DEFAULT_COLLISION_MASK = 385;
 
         [field: Header("Jet")]
         [field: SerializeField, Min(0f), Tooltip("Water exit speed at full pressure, m/s")]

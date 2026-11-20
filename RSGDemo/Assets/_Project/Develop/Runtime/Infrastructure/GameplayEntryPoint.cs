@@ -5,6 +5,7 @@ using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera.Factory;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Factory;
+using _Project.Develop.Runtime.Gameplay.Hoses.Attack.Factory;
 using _Project.Develop.Runtime.Gameplay.Hoses.Supply.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Crosshair;
@@ -24,6 +25,7 @@ namespace _Project.Develop.Runtime.Infrastructure
         private IFireTruckFactory _fireTruckFactory;
         private IHydrantFactory _hydrantFactory;
         private ISupplyHoseFactory _supplyHoseFactory;
+        private IAttackHoseFactory _attackHoseFactory;
         private IFirefighterFactory _firefighterFactory;
         private IFirstPersonCameraFactory _cameraFactory;
         private IFirefighterCoordinator _firefighterCoordinator;
@@ -37,6 +39,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             IFireTruckFactory fireTruckFactory,
             IHydrantFactory hydrantFactory,
             ISupplyHoseFactory supplyHoseFactory,
+            IAttackHoseFactory attackHoseFactory,
             IFirefighterFactory firefighterFactory,
             IFirstPersonCameraFactory cameraFactory,
             IFirefighterCoordinator firefighterCoordinator,
@@ -48,6 +51,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             _fireTruckFactory = fireTruckFactory;
             _hydrantFactory = hydrantFactory;
             _supplyHoseFactory = supplyHoseFactory;
+            _attackHoseFactory = attackHoseFactory;
             _firefighterFactory = firefighterFactory;
             _cameraFactory = cameraFactory;
             _firefighterCoordinator = firefighterCoordinator;
@@ -65,6 +69,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             FireTruckView truck = await _fireTruckFactory.CreateAsync();
             await _hydrantFactory.CreateAsync();
             await _supplyHoseFactory.CreateAsync(truck.IntakePoint, truck.HoseLayPoint);
+            await _attackHoseFactory.CreateAsync(truck.HoseReel, truck.NozzleHookPoint);
 
             FirefighterBody body = await _firefighterFactory.CreateAsync();
             FirstPersonCamera camera = await _cameraFactory.CreateAsync(body.HeadPoint);

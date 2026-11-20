@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ea99ea91e877c043bf93d463d85cbdd, type: 3}
+  m_Name: AttackHoseConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.AttackHoseConfig
+  <MaxLength>k__BackingField: 20
+  <ParkedLength>k__BackingField: 1
+  <PayOutMargin>k__BackingField: 1.5
+  <PayOutStretch>k__BackingField: 0.5
+  <MaxPayOutPerFrame>k__BackingField: 3
+  <LeashSlack>k__BackingField: 0.3
+  <ReelCoreRadius>k__BackingField: 0.165
+  <ReelWidth>k__BackingField: 0.56
+  <CoilSegmentsPerTurn>k__BackingField: 24
+  <ReelSpinSharpness>k__BackingField: 12
+  <Rope>k__BackingField:
+    <SegmentLength>k__BackingField: 0.15
+    <ConstraintIterations>k__BackingField: 24
+    <AirDamping>k__BackingField: 0.98
+    <GroundFriction>k__BackingField: 0.6
+    <BendStiffness>k__BackingField: 0.15
+    <InflatedBendStiffness>k__BackingField: 0.6
+    <GroundContactTolerance>k__BackingField: 0.02
+    <GroundMask>k__BackingField:
+      serializedVersion: 2
+      m_Bits: 1
+  <Radius>k__BackingField: 0.05
+  <DeflatedRadiusRatio>k__BackingField: 0.75
+  <DeflatedSquash>k__BackingField: 0.8
+  <InflationBulge>k__BackingField: 0.2
+  <InflationWaveWidth>k__BackingField: 0.15
+  <EndTaperLength>k__BackingField: 0.15
+  <Sides>k__BackingField: 10
+  <Subdivisions>k__BackingField: 3
+  <PaletteUv>k__BackingField: {x: 0.6875, y: 0.1875}
+  <HoldOffset>k__BackingField: {x: 0, y: 0.01, z: -0.01}
+  <AimPivot>k__BackingField: {x: 0, y: 0.01, z: -0.17}
+  <MinAimPitch>k__BackingField: -35
+  <MaxAimPitch>k__BackingField: 45
+  <AimTilt>k__BackingField: 5
+  <AimSharpness>k__BackingField: 10
+  <HeldHoseDroop>k__BackingField: 0.6
+  <GrabTween>k__BackingField:
+    duration: 0.3
+    ease: 9
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <DropTween>k__BackingField:
+    duration: 0.35
+    ease: 30
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <RestHeight>k__BackingField: 0.04

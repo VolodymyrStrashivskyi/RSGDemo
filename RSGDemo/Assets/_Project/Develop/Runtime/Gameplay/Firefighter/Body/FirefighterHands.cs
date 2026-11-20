@@ -20,6 +20,12 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         private Vector3 _leftBackOfHandAxis = Vector3.left;
         [SerializeField, Tooltip("Local axis of the right hand bone that points out of the back of the hand")]
         private Vector3 _rightBackOfHandAxis = Vector3.right;
+        [SerializeField, Tooltip("Renderer shown only while something is held, for first-person arms")]
+        private Renderer _shownWhileHolding;
+        [SerializeField, Tooltip("Renderer moved off the first-person camera while something is held, when separate first-person arms take over")]
+        private Renderer _hiddenInFirstPersonWhileHolding;
+        [SerializeField, Range(0, 31), Tooltip("Layer the first-person camera does not render")]
+        private int _firstPersonHiddenLayer;
         [SerializeField] private TweenSettings _gripTween = new TweenSettings(0.25f, Ease.OutCubic);
         [SerializeField] private TweenSettings _releaseTween = new TweenSettings(0.2f, Ease.InCubic);
 
@@ -27,6 +33,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         private TwoBoneIk _rightArm;
         private IHandGrips _grips;
         private float _weight;
+        private int _visibleLayer;
         private Tween _tween;
 
         public void Hold(IHandGrips grips)
@@ -42,10 +49,21 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         {
             _leftArm = new TwoBoneIk(_leftUpperArm, _leftLowerArm, _leftHand, _leftBackOfHandAxis);
             _rightArm = new TwoBoneIk(_rightUpperArm, _rightLowerArm, _rightHand, _rightBackOfHandAxis);
+
+            if (_hiddenInFirstPersonWhileHolding != null)
+                _visibleLayer = _hiddenInFirstPersonWhileHolding.gameObject.layer;
         }
 
         private void LateUpdate()
         {
+            bool isHolding = _grips != null && _weight > 0f;
+
+            if (_shownWhileHolding != null)
+                _shownWhileHolding.enabled = isHolding;
+
+            if (_hiddenInFirstPersonWhileHolding != null)
+                _hiddenInFirstPersonWhileHolding.gameObject.layer = isHolding ? _firstPersonHiddenLayer : _visibleLayer;
+
             if (_grips == null || _weight <= 0f)
                 return;
 
@@ -54,12 +72,15 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
 
             _leftArm.Solve(leftGrip, GetElbowHint(_leftUpperArm, _leftElbowHint), _weight);
             _rightArm.Solve(rightGrip, GetElbowHint(_rightUpperArm, _rightElbowHint), _weight);
-            _leftArm.OrientEnd(leftGrip - rightGrip, _weight);
-            _rightArm.OrientEnd(rightGrip - leftGrip, _weight);
+            OrientHand(_leftArm, _grips.LeftHandGrip);
+            OrientHand(_rightArm, _grips.RightHandGrip);
         }
 
         private void OnDestroy() =>
             _tween.Stop();
+
+        private void OrientHand(TwoBoneIk arm, Transform grip) =>
+            arm.OrientEnd(grip.up, grip.forward, _weight);
 
         private Vector3 GetElbowHint(Transform upperArm, Vector3 localDirection) =>
             upperArm.position + transform.TransformDirection(localDirection);

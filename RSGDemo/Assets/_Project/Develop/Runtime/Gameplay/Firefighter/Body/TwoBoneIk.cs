@@ -42,13 +42,12 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
             _lower.rotation = Quaternion.FromToRotation(_end.position - _lower.position, reachedTarget - _lower.position) * _lower.rotation;
         }
 
-        public void OrientEnd(Vector3 backOfHand, float weight)
+        public void OrientEnd(Vector3 backOfHand, Vector3 fingers, float weight)
         {
             if (weight <= 0f)
                 return;
 
-            Vector3 forearm = _end.position - _lower.position;
-            Quaternion gripRotation = Quaternion.LookRotation(backOfHand, forearm) * _backOfHandCorrection;
+            Quaternion gripRotation = Quaternion.LookRotation(backOfHand, fingers) * _backOfHandCorrection;
             _end.rotation = Quaternion.Slerp(_end.rotation, gripRotation, weight);
         }
 

@@ -1,4 +1,6 @@
 using _Project.Develop.Runtime.Data.Configs;
+using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
+using _Project.Develop.Runtime.Gameplay.Interaction;
 using UnityEngine;
 using VContainer;
 
@@ -8,6 +10,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
     public class FirstPersonCamera : MonoBehaviour
     {
         [SerializeField] private UnityEngine.Camera _camera;
+        [SerializeField] private FirefighterHands _arms;
 
         private CameraConfig _config;
         private float _yaw;
@@ -22,6 +25,8 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
             ApplyRotation();
         }
 
+        public FirefighterHands Arms => _arms;
+
         public float Yaw => _yaw;
 
         public Quaternion PlanarRotation => Quaternion.Euler(0f, _yaw, 0f);
@@ -33,6 +38,18 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
             _yaw += delta.x * _config.Sensitivity;
             _pitch = Mathf.Clamp(_pitch - delta.y * _config.Sensitivity, _config.MinPitch, _config.MaxPitch);
             ApplyRotation();
+        }
+
+        public void Hold(FirstPersonViewModel viewModel)
+        {
+            viewModel.Show(transform);
+            _arms.Hold(viewModel);
+        }
+
+        public void Release(FirstPersonViewModel viewModel)
+        {
+            _arms.Release();
+            viewModel.Hide();
         }
 
         public void SetPosition(Vector3 position) =>

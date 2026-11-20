@@ -4,6 +4,7 @@ using _Project.Develop.Runtime.Gameplay.Firefighter;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera.Factory;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Factory;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Interaction;
+using _Project.Develop.Runtime.Gameplay.Hoses.Attack.Factory;
 using _Project.Develop.Runtime.Gameplay.Hoses.Supply.Factory;
 using _Project.Develop.Runtime.Gameplay.Hydrant.Factory;
 using _Project.Develop.Runtime.Gameplay.Interaction;
@@ -29,6 +30,7 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
         [SerializeField] private WaterSupplyConfig _waterSupplyConfig;
         [SerializeField] private SupplyHoseConfig _supplyHoseConfig;
         [SerializeField] private WaterStreamConfig _waterStreamConfig;
+        [SerializeField] private AttackHoseConfig _attackHoseConfig;
         [SerializeField] private WorldTag _worldTag;
 
         protected override void Configure(IContainerBuilder builder)
@@ -41,12 +43,14 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.RegisterInstance(_waterSupplyConfig);
             builder.RegisterInstance(_supplyHoseConfig);
             builder.RegisterInstance(_waterStreamConfig);
+            builder.RegisterInstance(_attackHoseConfig);
             builder.RegisterComponent(_worldTag);
 
             builder.Register<IStreetFactory, StreetFactory>(Lifetime.Singleton);
             builder.Register<IFireTruckFactory, FireTruckFactory>(Lifetime.Singleton);
             builder.Register<IHydrantFactory, HydrantFactory>(Lifetime.Singleton);
             builder.Register<ISupplyHoseFactory, SupplyHoseFactory>(Lifetime.Singleton);
+            builder.Register<IAttackHoseFactory, AttackHoseFactory>(Lifetime.Singleton);
             builder.Register<IFirefighterFactory, FirefighterFactory>(Lifetime.Singleton);
             builder.Register<IFirstPersonCameraFactory, FirstPersonCameraFactory>(Lifetime.Singleton);
             builder.Register<IHudFactory, HudFactory>(Lifetime.Singleton);

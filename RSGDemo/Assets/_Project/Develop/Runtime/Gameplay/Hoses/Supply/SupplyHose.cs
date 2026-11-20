@@ -19,6 +19,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
         private IRaycastService _raycastService;
         private Transform _intakePoint;
         private HoseRope _rope;
+        private HoseTrail _trail;
 
         [Inject]
         public void Construct(SupplyHoseConfig config, SupplyLine supplyLine, IRaycastService raycastService)
@@ -33,10 +34,12 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
             _intakePoint = intakePoint;
             _rope = new HoseRope(_raycastService, _config.Rope, _config.Length);
             _rope.SurfaceOffset = GetDeflatedHalfHeight();
+            _rope.CollisionRadius = _config.Radius * _config.DeflatedRadiusRatio;
+            _trail = new HoseTrail(_raycastService, _config.Rope);
             LayOut(layPoint);
 
             _coupling.SetLeash(new HoseLeash(_rope, _config.LeashSlack));
-            _view.Initialize(CreateTube(), _config.InflationWaveWidth, _config.InflationBulge);
+            _view.Initialize(CreateTube(), CreateTube(), _config.InflationWaveWidth, _config.InflationBulge);
 
             _coupling.Attached += OnAttached;
             _coupling.Detached += OnDetached;
@@ -52,8 +55,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
             _rope.PinStart(_intakePoint.position, _intakePoint.forward);
             _rope.PinEnd(hoseEnd.position, hoseEnd.forward);
             ApplyInflationToRope();
+            _trail.Follow(_rope, _coupling.IsHeld, _coupling.transform.position);
             _rope.Simulate(Time.deltaTime);
-            _view.Render(_rope.Points);
+            _view.Render(_rope.Points, GetFirstPersonHoseEnd());
         }
 
         private void OnDestroy()
@@ -79,6 +83,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
             Vector3 approach = _rope.Points[_rope.Points.Count - 2];
             _coupling.PlaceAt(groundEnd, Quaternion.LookRotation(approach - groundEnd));
         }
+
+        private Transform GetFirstPersonHoseEnd() =>
+            _coupling.ViewModel.IsShown ? _coupling.ViewModel.HoseEnd : null;
 
         private HoseTubeMesh CreateTube() =>
             new HoseTubeMesh(

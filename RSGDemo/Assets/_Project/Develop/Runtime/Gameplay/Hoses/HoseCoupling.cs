@@ -8,7 +8,7 @@ using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses
 {
-    public class HoseCoupling : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint
+    public class HoseCoupling : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IFirstPersonHeld
     {
         private const float GROUND_PROBE_HEIGHT = 0.5f;
         private const float GROUND_PROBE_DISTANCE = 5f;
@@ -25,7 +25,13 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         [SerializeField] private Transform _leftHandGrip;
         [SerializeField] private Transform _rightHandGrip;
         [SerializeField] private LayerMask _groundMask = 1;
+        [SerializeField] private Renderer _renderer;
+        [SerializeField] private FirstPersonViewModel _viewModel;
+        [SerializeField, Range(0, 31), Tooltip("Layer the first-person camera does not render, used while held so only the view model shows")]
+        private int _firstPersonHiddenLayer;
         [SerializeField, Min(0f)] private float _restHeight = 0.05f;
+        [SerializeField, Tooltip("Position of the held coupling relative to the grab anchor, within reach of the body's arms, m")]
+        private Vector3 _holdPosition = new Vector3(0f, 0.02f, -0.1f);
         [SerializeField] private Vector3 _holdEulerAngles = new Vector3(37f, 180f, 0f);
         [SerializeField] private TweenSettings _grabTween = new TweenSettings(0.25f, Ease.OutCubic);
         [SerializeField] private TweenSettings _dropTween = new TweenSettings(0.35f, Ease.OutBounce);
@@ -40,6 +46,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private GrabAnchor _anchor;
         private IMovementConstraint _leash;
         private HoseSocket _socket;
+        private int _visibleLayer;
         private string _holder;
         private Sequence _sequence;
 
@@ -57,6 +64,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         public Transform LeftHandGrip => _leftHandGrip;
 
         public Transform RightHandGrip => _rightHandGrip;
+
+        public FirstPersonViewModel ViewModel => _viewModel;
 
         public bool IsHeld => _anchor != null;
 
@@ -80,10 +89,11 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         {
             _anchor = anchor;
             _collider.enabled = false;
+            _renderer.gameObject.layer = _firstPersonHiddenLayer;
             anchor.Attach(transform);
 
             Animate(Sequence.Create()
-                .Group(Tween.LocalPosition(transform, new TweenSettings<Vector3>(Vector3.zero, _grabTween)))
+                .Group(Tween.LocalPosition(transform, new TweenSettings<Vector3>(_holdPosition, _grabTween)))
                 .Group(Tween.LocalRotation(transform, new TweenSettings<Quaternion>(Quaternion.Euler(_holdEulerAngles), _grabTween))));
 
             Grabbed?.Invoke(_holder);
@@ -92,6 +102,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         public void OnReleased()
         {
             _anchor = null;
+            _renderer.gameObject.layer = _visibleLayer;
             transform.SetParent(_restParent, true);
 
             Vector3 restPosition = FindGround(transform.position) + Vector3.up * _restHeight;
@@ -131,8 +142,11 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         public Vector3 Constrain(Vector3 currentPosition, Vector3 desiredPosition) =>
             _leash != null ? _leash.Constrain(currentPosition, desiredPosition) : desiredPosition;
 
-        private void Awake() =>
+        private void Awake()
+        {
             _restParent = transform.parent;
+            _visibleLayer = _renderer.gameObject.layer;
+        }
 
         private void OnDestroy() =>
             _sequence.Stop();

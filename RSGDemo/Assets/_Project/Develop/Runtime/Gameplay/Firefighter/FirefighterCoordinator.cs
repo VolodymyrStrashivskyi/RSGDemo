@@ -70,6 +70,9 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
                 return;
 
             Synchronize();
+
+            if (_grabber.Held is IAimable aimable)
+                aimable.Aim(_camera.ViewRay.direction);
         }
 
         public void Dispose()
@@ -98,6 +101,11 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
 
             if (item is IHandGrips grips)
                 _body.Hands.Hold(grips);
+
+            if (item is IFirstPersonHeld firstPerson)
+                _camera.Hold(firstPerson.ViewModel);
+            else if (item is IHandGrips sharedGrips)
+                _camera.Arms.Hold(sharedGrips);
         }
 
         private void OnReleased(IGrabbable item)
@@ -110,6 +118,11 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
 
             if (item is IHandGrips)
                 _body.Hands.Release();
+
+            if (item is IFirstPersonHeld firstPerson)
+                _camera.Release(firstPerson.ViewModel);
+            else if (item is IHandGrips)
+                _camera.Arms.Release();
         }
 
         private void Synchronize()

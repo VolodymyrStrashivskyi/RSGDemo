@@ -510,6 +510,7 @@ MonoBehaviour:
   _waterSupplyConfig: {fileID: 11400000, guid: 2c270fa8b1a560f4fab23679d9788cf1, type: 2}
   _supplyHoseConfig: {fileID: 11400000, guid: bda143272e9bc1244a3ed118c8301499, type: 2}
   _waterStreamConfig: {fileID: 11400000, guid: 5da840afde181f44fb9cf0b487edcef7, type: 2}
+  _attackHoseConfig: {fileID: 11400000, guid: 084fb04af31aede4d8557d3d7cce2811, type: 2}
   _worldTag: {fileID: 472227897}
 --- !u!1 &1421651622
 GameObject:

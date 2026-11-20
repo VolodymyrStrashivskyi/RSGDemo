@@ -16,6 +16,7 @@ MonoBehaviour:
   <FireTruckPrefab>k__BackingField: {fileID: 7203124181431313292, guid: b438509753bc6df44b319e2c81f74fc1, type: 3}
   <HydrantPrefab>k__BackingField: {fileID: 8004474682277292196, guid: 496aefd2600517246986943461df6bea, type: 3}
   <SupplyHosePrefab>k__BackingField: {fileID: 4776897684817179441, guid: b6d50696919e9e6479959f384767bd01, type: 3}
+  <AttackHosePrefab>k__BackingField: {fileID: 1299866206646810925, guid: 396f8d4581b4e4e4fbce1698ebbdf992, type: 3}
   <FirefighterPrefab>k__BackingField: {fileID: 7888143498591889304, guid: f525cc725fbf27c49a94f4db1f975f42, type: 3}
   <CameraPrefab>k__BackingField: {fileID: 1132641676532377631, guid: 144745c2f03453844a8943e6dfb94a38, type: 3}
   <HudPrefab>k__BackingField: {fileID: 5775560322791660979, guid: 55d90fe2dd9fe4b45adb9ee39b6c1148, type: 3}
