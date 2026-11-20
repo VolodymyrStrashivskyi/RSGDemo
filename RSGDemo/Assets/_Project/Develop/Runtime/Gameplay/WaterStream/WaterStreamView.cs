@@ -67,6 +67,8 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
 
         public float Flow { get; set; }
 
+        public float ExitSpeed { get; private set; }
+
         public void Burst() =>
             _spray.Emit(_config.BurstCount);
 
@@ -86,6 +88,7 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
 
             bool isFlowing = Flow > MIN_VISIBLE_FLOW;
             float speed = isFlowing ? GetExitSpeed() : 0f;
+            ExitSpeed = speed;
             bool hasImpact = false;
             RaycastHit impact = default;
 

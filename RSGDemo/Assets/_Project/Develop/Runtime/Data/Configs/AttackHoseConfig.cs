@@ -30,8 +30,16 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField] public HoseRopeSettings Rope { get; private set; } = new HoseRopeSettings();
 
         [field: Header("Nozzle")]
-        [field: SerializeField, Min(0f), Tooltip("Water the open nozzle draws from the pump, L/s")]
+        [field: SerializeField, Min(0f), Tooltip("Water the fully open nozzle draws from the pump at the highest pressure setting, L/s")]
         public float NozzleFlowRate { get; private set; } = 25f;
+        [field: SerializeField, Range(0.05f, 1f), Tooltip("Lowest pressure setting, as a share of the full flow")]
+        public float MinPressureSetting { get; private set; } = 0.25f;
+        [field: SerializeField, Range(0.05f, 1f), Tooltip("Pressure setting change per mouse wheel notch")]
+        public float PressureStep { get; private set; } = 0.25f;
+        [field: SerializeField, Range(0.05f, 1f), Tooltip("Pressure setting of the nozzle at the start")]
+        public float StartPressureSetting { get; private set; } = 0.5f;
+        [field: SerializeField, Min(0f), Tooltip("Scale of the jet reaction force (water mass flow × exit speed) pushing the nozzle back")]
+        public float RecoilScale { get; private set; } = 1f;
         [field: SerializeField, Min(0f), Tooltip("How fast the stream builds up after the nozzle opens, 1/s")]
         public float FlowOpenSharpness { get; private set; } = 10f;
         [field: SerializeField, Min(0f), Tooltip("How fast the stream dies down after the nozzle closes or water runs out, 1/s")]

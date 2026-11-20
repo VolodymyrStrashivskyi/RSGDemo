@@ -22,5 +22,9 @@ namespace _Project.Develop.Runtime.Data.Configs
         public float PushAirDrag { get; private set; } = 0.5f;
         [field: SerializeField, Min(0f), Tooltip("Push velocity cap, m/s")]
         public float MaxPushSpeed { get; private set; } = 6f;
+
+        [field: Header("Nozzle Recoil")]
+        [field: SerializeField, Min(0f), Tooltip("Nozzle recoil the firefighter holds back while standing; only the excess pushes the body, N")]
+        public float RecoilBraceForce { get; private set; } = 320f;
     }
 }

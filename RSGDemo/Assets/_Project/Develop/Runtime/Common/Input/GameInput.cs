@@ -147,6 +147,15 @@ namespace _Project.Develop.Runtime.Common.Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AdjustPressure"",
+                    ""type"": ""Value"",
+                    ""id"": ""7d2e9b41-3f6a-4c58-b0e7-9a1c5d8f2e36"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -314,6 +323,17 @@ namespace _Project.Develop.Runtime.Common.Input
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c5f1a8e3-6b2d-4e97-8a40-2d9b7c3e1f58"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AdjustPressure"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -328,6 +348,7 @@ namespace _Project.Develop.Runtime.Common.Input
             m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
             m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
             m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+            m_Player_AdjustPressure = m_Player.FindAction("AdjustPressure", throwIfNotFound: true);
         }
 
         ~@GameInput()
@@ -414,6 +435,7 @@ namespace _Project.Develop.Runtime.Common.Input
         private readonly InputAction m_Player_Jump;
         private readonly InputAction m_Player_Interact;
         private readonly InputAction m_Player_Fire;
+        private readonly InputAction m_Player_AdjustPressure;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -449,6 +471,10 @@ namespace _Project.Develop.Runtime.Common.Input
             /// Provides access to the underlying input action "Player/Fire".
             /// </summary>
             public InputAction @Fire => m_Wrapper.m_Player_Fire;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/AdjustPressure".
+            /// </summary>
+            public InputAction @AdjustPressure => m_Wrapper.m_Player_AdjustPressure;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -493,6 +519,9 @@ namespace _Project.Develop.Runtime.Common.Input
                 @Fire.started += instance.OnFire;
                 @Fire.performed += instance.OnFire;
                 @Fire.canceled += instance.OnFire;
+                @AdjustPressure.started += instance.OnAdjustPressure;
+                @AdjustPressure.performed += instance.OnAdjustPressure;
+                @AdjustPressure.canceled += instance.OnAdjustPressure;
             }
 
             /// <summary>
@@ -522,6 +551,9 @@ namespace _Project.Develop.Runtime.Common.Input
                 @Fire.started -= instance.OnFire;
                 @Fire.performed -= instance.OnFire;
                 @Fire.canceled -= instance.OnFire;
+                @AdjustPressure.started -= instance.OnAdjustPressure;
+                @AdjustPressure.performed -= instance.OnAdjustPressure;
+                @AdjustPressure.canceled -= instance.OnAdjustPressure;
             }
 
             /// <summary>
@@ -604,6 +636,13 @@ namespace _Project.Develop.Runtime.Common.Input
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnFire(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "AdjustPressure" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnAdjustPressure(InputAction.CallbackContext context);
         }
     }
 }

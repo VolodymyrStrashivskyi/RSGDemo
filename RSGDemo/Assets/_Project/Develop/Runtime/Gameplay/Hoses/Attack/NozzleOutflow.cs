@@ -8,6 +8,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 {
     public class NozzleOutflow : MonoBehaviour
     {
+        private const float KILOGRAMS_PER_LITER = 1f;
+
         [SerializeField] private HoseNozzle _nozzle;
         [SerializeField] private WaterStreamView _stream;
 
@@ -27,13 +29,20 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
                 return;
 
             bool isOpen = _nozzle.IsOpen;
-            _waterSupplyChain.SetDemand(isOpen ? _config.NozzleFlowRate : 0f);
+            _waterSupplyChain.SetDemand(isOpen ? _config.NozzleFlowRate * _nozzle.PressureSetting : 0f);
 
             float targetFlow = isOpen ? GetDeliveredShare() : 0f;
             float sharpness = targetFlow > _stream.Flow ? _config.FlowOpenSharpness : _config.FlowCloseSharpness;
             float blend = 1f - Mathf.Exp(-sharpness * Time.deltaTime);
             _stream.Flow = Mathf.Lerp(_stream.Flow, targetFlow, blend);
             _stream.Follow(_nozzle.Tip, _nozzle.FirstPersonMuzzle);
+            _nozzle.SetReaction(GetReactionForce());
+        }
+
+        private float GetReactionForce()
+        {
+            float massFlow = _config.NozzleFlowRate * _stream.Flow * KILOGRAMS_PER_LITER;
+            return massFlow * _stream.ExitSpeed * _config.RecoilScale;
         }
 
         private float GetDeliveredShare() =>

@@ -10,6 +10,7 @@ namespace _Project.Develop.Runtime.Common.Input
         bool IsJumpPressed { get; }
         bool IsInteractPressed { get; }
         bool IsFireHeld { get; }
+        int AdjustDirection { get; }
 
         void EnablePlayerInput();
         void DisablePlayerInput();

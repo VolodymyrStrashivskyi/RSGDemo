@@ -22,6 +22,8 @@ namespace _Project.Develop.Runtime.Common.Input
 
         public bool IsFireHeld => _gameInput.Player.Fire.IsPressed();
 
+        public int AdjustDirection => Math.Sign(_gameInput.Player.AdjustPressure.ReadValue<float>());
+
         public void EnablePlayerInput() =>
             _gameInput.Player.Enable();
 

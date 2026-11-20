@@ -9,10 +9,11 @@ using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 {
-    public class HoseNozzle : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IAimable, IFirstPersonHeld, ITriggerable
+    public class HoseNozzle : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IAimable, IFirstPersonHeld, ITriggerable, IAdjustable, IRecoiling
     {
         private const float GROUND_PROBE_HEIGHT = 0.5f;
         private const float GROUND_PROBE_DISTANCE = 5f;
+        private const float MAX_PRESSURE_SETTING = 1f;
 
         public event Action<string> Grabbed;
         public event Action Released;
@@ -37,6 +38,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         private Quaternion _aimRotation = Quaternion.identity;
         private Vector3 _aimDirection;
         private int _visibleLayer;
+        private float _reaction;
         private string _holder;
         private bool _isAiming;
         private Sequence _sequence;
@@ -47,6 +49,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
             _config = config;
             _grabber = grabber;
             _raycastService = raycastService;
+            PressureSetting = config.StartPressureSetting;
         }
 
         public Transform HoseEnd => _hoseEnd;
@@ -66,6 +69,10 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         public bool IsHeld => _anchor != null;
 
         public bool IsOpen { get; private set; }
+
+        public float PressureSetting { get; private set; }
+
+        public Vector3 RecoilForce => IsHeld ? -_tip.forward * _reaction : Vector3.zero;
 
         public bool CanInteract => _grabber.IsHolding() == false;
 
@@ -117,6 +124,12 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 
         public void SetTrigger(bool isPressed) =>
             IsOpen = isPressed && IsHeld;
+
+        public void Adjust(int direction) =>
+            PressureSetting = Mathf.Clamp(PressureSetting + direction * _config.PressureStep, _config.MinPressureSetting, MAX_PRESSURE_SETTING);
+
+        public void SetReaction(float force) =>
+            _reaction = force;
 
         public void Park(Transform hook)
         {

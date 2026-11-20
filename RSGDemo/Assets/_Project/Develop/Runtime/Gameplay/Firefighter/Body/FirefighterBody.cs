@@ -25,6 +25,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         private bool _isRunning;
         private bool _isJumping;
         private Vector3 _pushVelocity;
+        private Vector3 _recoilForce;
         private float _verticalVelocity;
         private float _airTime;
 
@@ -66,6 +67,9 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         public void RemoveConstraint(IMovementConstraint constraint) =>
             _constraints.Remove(constraint);
 
+        public void SetRecoilForce(Vector3 force) =>
+            _recoilForce = new Vector3(force.x, 0f, force.z);
+
         public void AddWaterPush(Vector3 impulse)
         {
             Vector3 planarImpulse = new Vector3(impulse.x, 0f, impulse.z);
@@ -86,6 +90,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
             _verticalVelocity += _config.Gravity * Time.deltaTime;
 
             DampPush();
+            ApplyRecoil();
 
             Vector3 velocity = horizontalVelocity + _pushVelocity + Vector3.up * _verticalVelocity;
             Vector3 displacement = Constrain(velocity * Time.deltaTime);
@@ -102,6 +107,18 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         {
             float drag = _characterController.isGrounded ? _config.PushGroundDrag : _config.PushAirDrag;
             _pushVelocity *= Mathf.Exp(-drag * Time.deltaTime);
+        }
+
+        private void ApplyRecoil()
+        {
+            float brace = _characterController.isGrounded ? _config.RecoilBraceForce : 0f;
+            float excess = _recoilForce.magnitude - brace;
+
+            if (excess <= 0f)
+                return;
+
+            Vector3 acceleration = _recoilForce.normalized * (excess / _config.Mass);
+            _pushVelocity = Vector3.ClampMagnitude(_pushVelocity + acceleration * Time.deltaTime, _config.MaxPushSpeed);
         }
 
         private Vector3 Constrain(Vector3 displacement)

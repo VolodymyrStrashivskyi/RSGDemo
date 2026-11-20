@@ -32,6 +32,9 @@ namespace _Project.Develop.Runtime.Gameplay.Interaction
             gameObject.SetActive(true);
         }
 
+        public void SetRecoil(Vector3 offset, float tilt) =>
+            transform.SetLocalPositionAndRotation(_viewPosition + offset, Quaternion.Euler(_viewRotation + Vector3.left * tilt));
+
         public void Hide() =>
             gameObject.SetActive(false);
     }

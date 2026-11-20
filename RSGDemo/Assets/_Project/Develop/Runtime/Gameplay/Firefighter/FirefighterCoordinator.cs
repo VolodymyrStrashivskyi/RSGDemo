@@ -65,6 +65,11 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
 
             if (_grabber.Held is ITriggerable triggerable)
                 triggerable.SetTrigger(_inputService.IsFireHeld);
+
+            if (_grabber.Held is IAdjustable adjustable && _inputService.AdjustDirection != 0)
+                adjustable.Adjust(_inputService.AdjustDirection);
+
+            ApplyRecoil();
         }
 
         public void LateTick()
@@ -92,6 +97,13 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
                 _interactionScanner.Current.Interact(_body.transform);
             else if (_grabber.IsHolding())
                 _grabber.Release();
+        }
+
+        private void ApplyRecoil()
+        {
+            Vector3 force = _grabber.Held is IRecoiling recoiling ? recoiling.RecoilForce : Vector3.zero;
+            _body.SetRecoilForce(force);
+            _camera.SetRecoilForce(force.magnitude);
         }
 
         private void OnGrabbed(IGrabbable item)

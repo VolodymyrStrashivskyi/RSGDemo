@@ -9,12 +9,24 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
     [RequireComponent(typeof(UnityEngine.Camera))]
     public class FirstPersonCamera : MonoBehaviour
     {
+        private const float NEWTONS_PER_KILONEWTON = 1000f;
+        private const float HALF = 0.5f;
+        private const float NOISE_RANGE = 2f;
+        private const float PITCH_SHAKE_SEED = 0.37f;
+        private const float YAW_SHAKE_SEED = 5.13f;
+
         [SerializeField] private UnityEngine.Camera _camera;
         [SerializeField] private FirefighterHands _arms;
 
         private CameraConfig _config;
         private float _yaw;
         private float _pitch;
+        private FirstPersonViewModel _heldViewModel;
+        private float _recoilKilonewtons;
+        private float _recoilClimb;
+        private float _recoilClimbVelocity;
+        private float _pitchNoise;
+        private float _yawNoise;
 
         [Inject]
         public void Construct(CameraConfig config)
@@ -40,8 +52,12 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
             ApplyRotation();
         }
 
+        public void SetRecoilForce(float force) =>
+            _recoilKilonewtons = force / NEWTONS_PER_KILONEWTON;
+
         public void Hold(FirstPersonViewModel viewModel)
         {
+            _heldViewModel = viewModel;
             viewModel.Show(transform);
             _arms.Hold(viewModel);
         }
@@ -50,12 +66,58 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
         {
             _arms.Release();
             viewModel.Hide();
+
+            if (_heldViewModel == viewModel)
+                _heldViewModel = null;
         }
 
         public void SetPosition(Vector3 position) =>
             transform.position = position;
 
-        private void ApplyRotation() =>
-            transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
+        private void Update()
+        {
+            if (_config == null)
+                return;
+
+            UpdateRecoilClimb(Time.deltaTime);
+            UpdateShakeNoise();
+            ApplyRotation();
+            KickHeldItem();
+        }
+
+        private void UpdateRecoilClimb(float deltaTime)
+        {
+            float targetClimb = _recoilKilonewtons * _config.RecoilClimbPerKilonewton;
+            float acceleration = (targetClimb - _recoilClimb) * _config.RecoilStiffness - _recoilClimbVelocity * _config.RecoilDamping;
+            _recoilClimbVelocity += acceleration * deltaTime;
+            _recoilClimb += _recoilClimbVelocity * deltaTime;
+        }
+
+        private void UpdateShakeNoise()
+        {
+            float time = Time.time * _config.RecoilShakeFrequency;
+            _pitchNoise = GetNoise(time, PITCH_SHAKE_SEED);
+            _yawNoise = GetNoise(time, YAW_SHAKE_SEED);
+        }
+
+        private void KickHeldItem()
+        {
+            if (_heldViewModel == null)
+                return;
+
+            float sideways = _yawNoise * _recoilKilonewtons * _config.HeldShakePerKilonewton;
+            Vector3 offset = new Vector3(sideways, 0f, -_recoilKilonewtons * _config.HeldKickPerKilonewton);
+            _heldViewModel.SetRecoil(offset, _recoilClimb * _config.HeldTiltRatio);
+        }
+
+        private void ApplyRotation()
+        {
+            float shake = _recoilKilonewtons * _config.RecoilShakePerKilonewton;
+            float pitch = Mathf.Clamp(_pitch - _recoilClimb + _pitchNoise * shake, _config.MinPitch, _config.MaxPitch);
+            transform.rotation = Quaternion.Euler(pitch, _yaw + _yawNoise * shake, 0f);
+        }
+
+        private static float GetNoise(float time, float seed) =>
+            (Mathf.PerlinNoise(time, seed) - HALF) * NOISE_RANGE;
     }
 }
