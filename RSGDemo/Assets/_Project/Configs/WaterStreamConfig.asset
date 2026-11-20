@@ -17,11 +17,12 @@ MonoBehaviour:
   <ArcSegments>k__BackingField: 28
   <CollisionMask>k__BackingField:
     serializedVersion: 2
-    m_Bits: 385
+    m_Bits: 1409
   <NozzleRadius>k__BackingField: 0.06
   <SpreadRadius>k__BackingField: 0.22
   <LowFlowRadiusScale>k__BackingField: 0.45
   <BreakupTime>k__BackingField: 0.75
+  <SpreadExponent>k__BackingField: 1
   <Sides>k__BackingField: 12
   <FadeFlow>k__BackingField: 0.15
   <EndFadeLength>k__BackingField: 0.4
@@ -87,10 +88,15 @@ MonoBehaviour:
   <BurstCount>k__BackingField: 70
   <PuddleResolution>k__BackingField: 64
   <PuddleCellSize>k__BackingField: 0.15
-  <PuddleForwardOffset>k__BackingField: 3.5
+  <MaxPuddles>k__BackingField: 6
+  <PuddlePlaceInterval>k__BackingField: 0.3
   <PuddleGroundMask>k__BackingField:
     serializedVersion: 2
     m_Bits: 1
+  <PuddleProbeHeight>k__BackingField: 0.5
+  <PuddleProbeDepth>k__BackingField: 1
+  <PuddleLevelTolerance>k__BackingField: 0.4
+  <PuddleMaxCellRise>k__BackingField: 0.06
   <PuddleLift>k__BackingField: 0.008
   <PuddleGroundNoise>k__BackingField: 0.006
   <PuddleNoiseScale>k__BackingField: 0.9

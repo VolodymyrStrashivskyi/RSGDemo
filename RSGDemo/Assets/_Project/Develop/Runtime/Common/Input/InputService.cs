@@ -20,6 +20,8 @@ namespace _Project.Develop.Runtime.Common.Input
 
         public bool IsInteractPressed => _gameInput.Player.Interact.WasPressedThisFrame();
 
+        public bool IsFireHeld => _gameInput.Player.Fire.IsPressed();
+
         public void EnablePlayerInput() =>
             _gameInput.Player.Enable();
 

@@ -6,7 +6,7 @@ namespace _Project.Develop.Runtime.Data.Configs
     [CreateAssetMenu(fileName = "WaterStreamConfig", menuName = "Configs/Water Stream Config")]
     public class WaterStreamConfig : ScriptableObject
     {
-        private const int DEFAULT_COLLISION_MASK = 385;
+        private const int DEFAULT_COLLISION_MASK = 1409;
 
         [field: Header("Jet")]
         [field: SerializeField, Min(0f), Tooltip("Water exit speed at full pressure, m/s")]
@@ -27,6 +27,8 @@ namespace _Project.Develop.Runtime.Data.Configs
         public float LowFlowRadiusScale { get; private set; } = 0.45f;
         [field: SerializeField, Min(0.01f), Tooltip("Flight time after which the stream is fully broken into drops, s")]
         public float BreakupTime { get; private set; } = 0.75f;
+        [field: SerializeField, Min(0.1f), Tooltip("How the stream widens over its flight: 1 grows evenly, higher stays tight near the outlet and opens up further out")]
+        public float SpreadExponent { get; private set; } = 1f;
         [field: SerializeField, Min(3), Tooltip("Sides of the stream tube")]
         public int Sides { get; private set; } = 12;
         [field: SerializeField, Range(0f, 1f), Tooltip("Flow below which the stream fades in or out")]
@@ -75,10 +77,20 @@ namespace _Project.Develop.Runtime.Data.Configs
         public int PuddleResolution { get; private set; } = 64;
         [field: SerializeField, Min(0.02f), Tooltip("Size of one puddle grid cell, m")]
         public float PuddleCellSize { get; private set; } = 0.15f;
-        [field: SerializeField, Tooltip("How far ahead of the outlet the puddle grid is centred, m")]
-        public float PuddleForwardOffset { get; private set; } = 3.5f;
-        [field: SerializeField, Tooltip("Surfaces the puddle grid lies on")]
+        [field: SerializeField, Min(1), Tooltip("Most puddles kept at once; a new spot reuses the driest one")]
+        public int MaxPuddles { get; private set; } = 6;
+        [field: SerializeField, Min(0f), Tooltip("Shortest time between laying out new puddles, so a jittering stream does not rebuild them every frame, s")]
+        public float PuddlePlaceInterval { get; private set; } = 0.3f;
+        [field: SerializeField, Tooltip("Static surfaces the puddle grid lies on; movable props are left out so no puddle hangs in the air once they are pushed away")]
         public LayerMask PuddleGroundMask { get; private set; } = 1;
+        [field: SerializeField, Min(0.05f), Tooltip("How far above the floor the puddle looks for ground; higher ground blocks the water, m")]
+        public float PuddleProbeHeight { get; private set; } = 0.5f;
+        [field: SerializeField, Min(0f), Tooltip("How far below the floor the puddle still finds ground to run down to; water running off a deeper edge is gone, m")]
+        public float PuddleProbeDepth { get; private set; } = 1f;
+        [field: SerializeField, Min(0.01f), Tooltip("Floor height difference at which water lands in a separate puddle, m")]
+        public float PuddleLevelTolerance { get; private set; } = 0.4f;
+        [field: SerializeField, Min(0.005f), Tooltip("Height jump inside one grid cell above which the puddle surface is left open, so it never stands up as a wall at furniture and step edges, m")]
+        public float PuddleMaxCellRise { get; private set; } = 0.06f;
         [field: SerializeField, Min(0f), Tooltip("Height above the ground the puddle surface floats at, m")]
         public float PuddleLift { get; private set; } = 0.008f;
         [field: SerializeField, Min(0f), Tooltip("Random unevenness of the ground that makes water pool in patches, m")]

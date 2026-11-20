@@ -29,6 +29,14 @@ namespace _Project.Develop.Runtime.Data.Configs
         public float ReelSpinSharpness { get; private set; } = 12f;
         [field: SerializeField] public HoseRopeSettings Rope { get; private set; } = new HoseRopeSettings();
 
+        [field: Header("Nozzle")]
+        [field: SerializeField, Min(0f), Tooltip("Water the open nozzle draws from the pump, L/s")]
+        public float NozzleFlowRate { get; private set; } = 25f;
+        [field: SerializeField, Min(0f), Tooltip("How fast the stream builds up after the nozzle opens, 1/s")]
+        public float FlowOpenSharpness { get; private set; } = 10f;
+        [field: SerializeField, Min(0f), Tooltip("How fast the stream dies down after the nozzle closes or water runs out, 1/s")]
+        public float FlowCloseSharpness { get; private set; } = 7f;
+
         [field: Header("Look")]
         [field: SerializeField, Min(0.01f), Tooltip("Hose radius under pressure, m")]
         public float Radius { get; private set; } = 0.05f;

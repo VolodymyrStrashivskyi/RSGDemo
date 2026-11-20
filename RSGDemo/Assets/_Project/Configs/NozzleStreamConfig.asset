@@ -1,0 +1,110 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1baa098d13858404b993d0221d269d88, type: 3}
+  m_Name: NozzleStreamConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.WaterStreamConfig
+  <ExitSpeed>k__BackingField: 24
+  <MaxFlightTime>k__BackingField: 2.6
+  <ArcSegments>k__BackingField: 52
+  <CollisionMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 1281
+  <NozzleRadius>k__BackingField: 0.03
+  <SpreadRadius>k__BackingField: 0.85
+  <LowFlowRadiusScale>k__BackingField: 0.45
+  <BreakupTime>k__BackingField: 1.3
+  <SpreadExponent>k__BackingField: 1.8
+  <Sides>k__BackingField: 16
+  <FadeFlow>k__BackingField: 0.15
+  <EndFadeLength>k__BackingField: 0.8
+  <EndSplay>k__BackingField: 1.2
+  <PushForce>k__BackingField: 600
+  <BrokenPushScale>k__BackingField: 0.35
+  <FlickerAmplitude>k__BackingField: 0.05
+  <FlickerFrequency>k__BackingField: 5
+  <BurstFlow>k__BackingField: 1.35
+  <OpenDelay>k__BackingField: 0.3
+  <BurstTween>k__BackingField:
+    duration: 0.25
+    ease: 6
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <SettleTween>k__BackingField:
+    duration: 0.8
+    ease: 4
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <StopTween>k__BackingField:
+    duration: 0.9
+    ease: 6
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <SprayRate>k__BackingField: 420
+  <MistRate>k__BackingField: 55
+  <SplashRate>k__BackingField: 150
+  <SplashMistRate>k__BackingField: 24
+  <BurstCount>k__BackingField: 70
+  <PuddleResolution>k__BackingField: 64
+  <PuddleCellSize>k__BackingField: 0.15
+  <MaxPuddles>k__BackingField: 6
+  <PuddlePlaceInterval>k__BackingField: 0.3
+  <PuddleGroundMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 1
+  <PuddleProbeHeight>k__BackingField: 0.5
+  <PuddleProbeDepth>k__BackingField: 1
+  <PuddleLevelTolerance>k__BackingField: 0.4
+  <PuddleMaxCellRise>k__BackingField: 0.06
+  <PuddleLift>k__BackingField: 0.008
+  <PuddleGroundNoise>k__BackingField: 0.006
+  <PuddleNoiseScale>k__BackingField: 0.9
+  <PuddleFillRate>k__BackingField: 0.004
+  <PuddlePourRadius>k__BackingField: 0.3
+  <PuddleFlowRate>k__BackingField: 8
+  <PuddleMinFlowDepth>k__BackingField: 0.0015
+  <PuddleEvaporation>k__BackingField: 0.00015
+  <PuddleFullDepth>k__BackingField: 0.004
+  <PuddleSimulationStep>k__BackingField: 0.033
+  <PuddleActivityFadeTime>k__BackingField: 0.8

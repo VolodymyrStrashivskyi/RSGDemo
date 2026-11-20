@@ -4854,7 +4854,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6126983177497140105
 Transform:
   m_ObjectHideFlags: 0
@@ -4868,7 +4868,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8216460464286326372}
+  m_Father: {fileID: 2922225346968758301}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6555149941075246537
 MeshFilter:
@@ -9778,6 +9778,52 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!1 &4840815721068167443
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2922225346968758301}
+  - component: {fileID: 6658644220909760164}
+  m_Layer: 0
+  m_Name: Puddles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2922225346968758301
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4840815721068167443}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6126983177497140105}
+  m_Father: {fileID: 8216460464286326372}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6658644220909760164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4840815721068167443}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e50b8830ac54bd84bbcc3e0fdfb565c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.WaterStream.PuddleField
+  _template: {fileID: 8946351938296732581}
 --- !u!1 &5321860307304019134
 GameObject:
   m_ObjectHideFlags: 0
@@ -19544,7 +19590,7 @@ Transform:
   - {fileID: 3967916935119121597}
   - {fileID: 2045054377891218732}
   - {fileID: 800033679547334821}
-  - {fileID: 6126983177497140105}
+  - {fileID: 2922225346968758301}
   m_Father: {fileID: 6023149694258563849}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8400133714541098501
@@ -19622,7 +19668,8 @@ MonoBehaviour:
   _mist: {fileID: 5417023037589455425}
   _splash: {fileID: 2425286348342901638}
   _splashMist: {fileID: 3692268928935814299}
-  _puddle: {fileID: 8946351938296732581}
+  _puddles: {fileID: 6658644220909760164}
+  _ownConfig: {fileID: 0}
 --- !u!1 &9170760349645378319
 GameObject:
   m_ObjectHideFlags: 0

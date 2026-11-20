@@ -19,28 +19,50 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
         [SerializeField] private ParticleSystem _mist;
         [SerializeField] private ParticleSystem _splash;
         [SerializeField] private ParticleSystem _splashMist;
-        [SerializeField] private PuddleView _puddle;
+        [SerializeField] private PuddleField _puddles;
+        [SerializeField, Tooltip("Own tuning for this stream; the shared water stream config is used when empty")]
+        private WaterStreamConfig _ownConfig;
+        [SerializeField, Tooltip("Copy of the stream drawn only by the first-person camera; empty for streams nobody holds")]
+        private MeshFilter _firstPersonMeshFilter;
+        [SerializeField] private MeshRenderer _firstPersonRenderer;
+        [SerializeField, Range(0, 31), Tooltip("Layer the first-person camera does not render, used for the real stream while the copy shows")]
+        private int _firstPersonHiddenLayer;
+        [SerializeField, Min(0.01f), Tooltip("Length over which the first-person copy bends from the on-screen nozzle onto the real stream, m")]
+        private float _firstPersonBlendLength = 2f;
 
         private readonly List<Vector3> _points = new List<Vector3>();
         private readonly List<float> _radii = new List<float>();
         private readonly List<float> _progress = new List<float>();
         private readonly List<float> _opacities = new List<float>();
+        private readonly List<Vector3> _firstPersonPoints = new List<Vector3>();
 
         private WaterStreamConfig _config;
         private IRaycastService _raycastService;
         private WaterStreamMesh _mesh;
+        private WaterStreamMesh _firstPersonMesh;
         private Collider _pushedCollider;
         private IWaterPushable _pushable;
+        private Transform _muzzle;
+        private Transform _firstPersonMuzzle;
+        private int _visibleLayer;
         private Vector3 _impactVelocity;
         private float _impactBreakup;
 
         [Inject]
         public void Construct(WaterStreamConfig config, IRaycastService raycastService)
         {
-            _config = config;
+            _config = _ownConfig != null ? _ownConfig : config;
             _raycastService = raycastService;
-            _mesh = new WaterStreamMesh(config.Sides);
+            _mesh = new WaterStreamMesh(_config.Sides);
             _meshFilter.sharedMesh = _mesh.Mesh;
+            _visibleLayer = _meshRenderer.gameObject.layer;
+
+            if (_firstPersonMeshFilter != null)
+            {
+                _firstPersonMesh = new WaterStreamMesh(_config.Sides);
+                _firstPersonMeshFilter.sharedMesh = _firstPersonMesh.Mesh;
+                _firstPersonRenderer.enabled = false;
+            }
         }
 
         public float Flow { get; set; }
@@ -48,10 +70,19 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
         public void Burst() =>
             _spray.Emit(_config.BurstCount);
 
+        public void Follow(Transform muzzle, Transform firstPersonMuzzle)
+        {
+            _muzzle = muzzle;
+            _firstPersonMuzzle = firstPersonMuzzle;
+        }
+
         private void LateUpdate()
         {
             if (_mesh == null)
                 return;
+
+            if (_muzzle != null)
+                transform.SetPositionAndRotation(_muzzle.position, _muzzle.rotation);
 
             bool isFlowing = Flow > MIN_VISIBLE_FLOW;
             float speed = isFlowing ? GetExitSpeed() : 0f;
@@ -69,6 +100,7 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
                 Push(impact);
 
             _meshRenderer.enabled = isFlowing;
+            RenderFirstPersonCopy(isFlowing);
             float flowRate = isFlowing ? Flow : 0f;
             UpdateEmitter(_spray, _config.SprayRate * flowRate, speed);
             UpdateEmitter(_mist, _config.MistRate * flowRate, speed);
@@ -80,6 +112,40 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
         {
             if (_mesh != null)
                 Destroy(_mesh.Mesh);
+
+            if (_firstPersonMesh != null)
+                Destroy(_firstPersonMesh.Mesh);
+        }
+
+        private void RenderFirstPersonCopy(bool isFlowing)
+        {
+            if (_firstPersonMesh == null)
+                return;
+
+            bool isShown = isFlowing && _firstPersonMuzzle != null;
+            _firstPersonRenderer.enabled = isShown;
+            _meshRenderer.gameObject.layer = _firstPersonMuzzle != null ? _firstPersonHiddenLayer : _visibleLayer;
+
+            if (isShown)
+                _firstPersonMesh.Build(BendStartTo(transform.InverseTransformPoint(_firstPersonMuzzle.position)), _radii, _progress, _opacities);
+        }
+
+        private List<Vector3> BendStartTo(Vector3 start)
+        {
+            _firstPersonPoints.Clear();
+            Vector3 offset = start - _points[0];
+            float distance = 0f;
+
+            for (int i = 0; i < _points.Count; i++)
+            {
+                if (i > 0)
+                    distance += Vector3.Distance(_points[i - 1], _points[i]);
+
+                float weight = 1f - Mathf.SmoothStep(0f, 1f, distance / _firstPersonBlendLength);
+                _firstPersonPoints.Add(_points[i] + offset * weight);
+            }
+
+            return _firstPersonPoints;
         }
 
         private float GetExitSpeed()
@@ -130,7 +196,8 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
         {
             float breakup = Mathf.Clamp01(flightTime / _config.BreakupTime);
             _points.Add(transform.InverseTransformPoint(worldPosition));
-            _radii.Add(Mathf.Lerp(_config.NozzleRadius, _config.SpreadRadius, breakup) * radiusScale);
+            float spread = Mathf.Pow(breakup, _config.SpreadExponent);
+            _radii.Add(Mathf.Lerp(_config.NozzleRadius, _config.SpreadRadius, spread) * radiusScale);
             _progress.Add(breakup);
             _opacities.Add(Mathf.Clamp01(Flow / _config.FadeFlow));
         }
@@ -200,10 +267,10 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
 
         private void UpdatePuddle(bool hasImpact, RaycastHit impact, float flowRate)
         {
-            _puddle.SetImpact(impact.point, hasImpact);
-
             if (hasImpact)
-                _puddle.Pour(impact.point, _config.PuddleFillRate * flowRate * Time.deltaTime);
+                _puddles.Pour(impact, _config.PuddleFillRate * flowRate * Time.deltaTime);
+            else
+                _puddles.Stop();
         }
     }
 }

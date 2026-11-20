@@ -62,6 +62,9 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
 
             if (_inputService.IsInteractPressed)
                 Interact();
+
+            if (_grabber.Held is ITriggerable triggerable)
+                triggerable.SetTrigger(_inputService.IsFireHeld);
         }
 
         public void LateTick()

@@ -18,15 +18,17 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
         private readonly int _resolution;
         private readonly float _cellArea;
         private readonly float[] _ground;
+        private readonly bool[] _drains;
         private readonly float[] _water;
         private readonly float[] _delta;
         private readonly float[] _drops = new float[4];
 
-        public PuddleSimulation(int resolution, float cellSize, float[] ground)
+        public PuddleSimulation(int resolution, float cellSize, float[] ground, bool[] drains)
         {
             _resolution = resolution;
             _cellArea = cellSize * cellSize;
             _ground = ground;
+            _drains = drains;
             _water = new float[resolution * resolution];
             _delta = new float[resolution * resolution];
         }
@@ -77,7 +79,7 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
 
             for (int i = 0; i < _water.Length; i++)
             {
-                _water[i] = Mathf.Max(0f, _water[i] + _delta[i] - evaporated);
+                _water[i] = _drains[i] ? 0f : Mathf.Max(0f, _water[i] + _delta[i] - evaporated);
                 total += _water[i];
             }
 

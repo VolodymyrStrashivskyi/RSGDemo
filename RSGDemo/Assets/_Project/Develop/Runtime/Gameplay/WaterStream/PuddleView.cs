@@ -8,8 +8,6 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
 {
     public class PuddleView : MonoBehaviour
     {
-        private const float GROUND_PROBE_HEIGHT = 3f;
-        private const float GROUND_PROBE_DISTANCE = 8f;
         private const float MIN_VISIBLE_DEPTH = 1e-5f;
         private const float HALF = 0.5f;
 
@@ -41,9 +39,55 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
             _renderer.enabled = false;
         }
 
+        public bool IsPlaced => _simulation != null;
+
+        public float TotalDepth => IsPlaced ? _simulation.TotalDepth : 0f;
+
+        public void Place(Vector3 floorPoint)
+        {
+            transform.SetPositionAndRotation(floorPoint, Quaternion.identity);
+            transform.localScale = Vector3.one;
+            _activity = 0f;
+            _targetActivity = 0f;
+            _stepAccumulator = 0f;
+
+            int resolution = _config.PuddleResolution;
+            float[] ground = new float[resolution * resolution];
+            bool[] drains = new bool[resolution * resolution];
+
+            if (_mesh != null)
+                Destroy(_mesh);
+
+            _mesh = BuildGroundMesh(ground, drains, floorPoint.y);
+            _meshFilter.sharedMesh = _mesh;
+            _simulation = new PuddleSimulation(resolution, _config.PuddleCellSize, ground, drains);
+
+            if (_wetness == null)
+            {
+                _wetness = new Texture2D(resolution, resolution, TextureFormat.RFloat, false, true)
+                {
+                    name = "PuddleWetness",
+                    filterMode = FilterMode.Bilinear,
+                    wrapMode = TextureWrapMode.Clamp
+                };
+            }
+        }
+
+        public bool Contains(Vector3 floorPoint, float margin)
+        {
+            if (IsPlaced == false || Mathf.Abs(floorPoint.y - transform.position.y) > _config.PuddleLevelTolerance)
+                return false;
+
+            Vector3 local = transform.InverseTransformPoint(floorPoint);
+            float reach = (_config.PuddleResolution - 1) * HALF * _config.PuddleCellSize - margin;
+            return Mathf.Abs(local.x) < reach && Mathf.Abs(local.z) < reach;
+        }
+
         public void Pour(Vector3 point, float volume)
         {
-            EnsureBuilt();
+            if (IsPlaced == false)
+                return;
+
             Vector3 local = transform.InverseTransformPoint(point);
             float half = _config.PuddleResolution * HALF;
             Vector2 cell = new Vector2(local.x / _config.PuddleCellSize + half, local.z / _config.PuddleCellSize + half) - Vector2.one * HALF;
@@ -98,35 +142,7 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
                 Destroy(_wetness);
         }
 
-        private void EnsureBuilt()
-        {
-            if (_simulation != null)
-                return;
-
-            PlaceArea();
-            int resolution = _config.PuddleResolution;
-            float[] ground = new float[resolution * resolution];
-            _mesh = BuildGroundMesh(ground);
-            _meshFilter.sharedMesh = _mesh;
-            _simulation = new PuddleSimulation(resolution, _config.PuddleCellSize, ground);
-            _wetness = new Texture2D(resolution, resolution, TextureFormat.RFloat, false, true)
-            {
-                name = "PuddleWetness",
-                filterMode = FilterMode.Bilinear,
-                wrapMode = TextureWrapMode.Clamp
-            };
-        }
-
-        private void PlaceArea()
-        {
-            Transform stream = transform.parent;
-            Vector3 forward = Vector3.ProjectOnPlane(stream.forward, Vector3.up).normalized;
-            Vector3 center = stream.position + forward * _config.PuddleForwardOffset;
-            transform.SetPositionAndRotation(new Vector3(center.x, 0f, center.z), Quaternion.LookRotation(forward));
-            transform.localScale = Vector3.one;
-        }
-
-        private Mesh BuildGroundMesh(float[] ground)
+        private Mesh BuildGroundMesh(float[] ground, bool[] drains, float floorHeight)
         {
             int resolution = _config.PuddleResolution;
             float cellSize = _config.PuddleCellSize;
@@ -134,15 +150,16 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
             List<Vector3> vertices = new List<Vector3>(resolution * resolution);
             List<Vector2> uvs = new List<Vector2>(resolution * resolution);
             List<int> triangles = new List<int>();
-            float fallbackHeight = transform.parent.position.y;
 
             for (int y = 0; y < resolution; y++)
             {
                 for (int x = 0; x < resolution; x++)
                 {
                     Vector3 world = transform.TransformPoint(new Vector3((x - half) * cellSize, 0f, (y - half) * cellSize));
-                    float height = FindGroundHeight(world, fallbackHeight);
-                    ground[y * resolution + x] = height + GetGroundNoise(world);
+                    int index = y * resolution + x;
+                    bool hasGround = TryFindGroundHeight(world, floorHeight, out float height);
+                    drains[index] = hasGround == false;
+                    ground[index] = hasGround ? height + GetGroundNoise(world) : floorHeight - _config.PuddleProbeHeight - _config.PuddleProbeDepth;
                     vertices.Add(transform.InverseTransformPoint(new Vector3(world.x, height + _config.PuddleLift, world.z)));
                     uvs.Add(new Vector2((x + HALF) / resolution, (y + HALF) / resolution));
                 }
@@ -153,6 +170,10 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
                 for (int x = 0; x < resolution - 1; x++)
                 {
                     int corner = y * resolution + x;
+
+                    if (IsSteep(vertices, corner, resolution) || TouchesDrain(drains, corner, resolution))
+                        continue;
+
                     triangles.Add(corner);
                     triangles.Add(corner + resolution);
                     triangles.Add(corner + 1);
@@ -171,10 +192,26 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
             return mesh;
         }
 
-        private float FindGroundHeight(Vector3 world, float fallbackHeight)
+        private bool IsSteep(List<Vector3> vertices, int corner, int resolution)
         {
-            Ray ray = new Ray(new Vector3(world.x, fallbackHeight + GROUND_PROBE_HEIGHT, world.z), Vector3.down);
-            return _raycastService.TryRaycastFarthest(ray, GROUND_PROBE_DISTANCE, _config.PuddleGroundMask, out RaycastHit hit) ? hit.point.y : fallbackHeight;
+            float nearLeft = vertices[corner].y;
+            float nearRight = vertices[corner + 1].y;
+            float farLeft = vertices[corner + resolution].y;
+            float farRight = vertices[corner + resolution + 1].y;
+            float rise = Mathf.Max(nearLeft, nearRight, farLeft, farRight) - Mathf.Min(nearLeft, nearRight, farLeft, farRight);
+            return rise > _config.PuddleMaxCellRise;
+        }
+
+        private static bool TouchesDrain(bool[] drains, int corner, int resolution) =>
+            drains[corner] || drains[corner + 1] || drains[corner + resolution] || drains[corner + resolution + 1];
+
+        private bool TryFindGroundHeight(Vector3 world, float floorHeight, out float height)
+        {
+            Ray ray = new Ray(new Vector3(world.x, floorHeight + _config.PuddleProbeHeight, world.z), Vector3.down);
+            float distance = _config.PuddleProbeHeight + _config.PuddleProbeDepth;
+            bool isHit = _raycastService.TryRaycast(ray, distance, _config.PuddleGroundMask, out RaycastHit hit);
+            height = isHit ? hit.point.y : floorHeight;
+            return isHit;
         }
 
         private float GetGroundNoise(Vector3 world) =>

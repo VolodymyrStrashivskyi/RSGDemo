@@ -9,7 +9,7 @@ using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 {
-    public class HoseNozzle : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IAimable, IFirstPersonHeld
+    public class HoseNozzle : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IAimable, IFirstPersonHeld, ITriggerable
     {
         private const float GROUND_PROBE_HEIGHT = 0.5f;
         private const float GROUND_PROBE_DISTANCE = 5f;
@@ -61,7 +61,11 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 
         public FirstPersonViewModel ViewModel => _viewModel;
 
+        public Transform FirstPersonMuzzle => _viewModel.IsShown ? _viewModel.Muzzle : null;
+
         public bool IsHeld => _anchor != null;
+
+        public bool IsOpen { get; private set; }
 
         public bool CanInteract => _grabber.IsHolding() == false;
 
@@ -93,6 +97,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         {
             _anchor = null;
             _isAiming = false;
+            IsOpen = false;
             transform.SetParent(_restParent, true);
 
             Vector3 restPosition = FindGround(transform.position) + Vector3.up * _config.RestHeight;
@@ -109,6 +114,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 
         public void Aim(Vector3 direction) =>
             _aimDirection = direction;
+
+        public void SetTrigger(bool isPressed) =>
+            IsOpen = isPressed && IsHeld;
 
         public void Park(Transform hook)
         {
