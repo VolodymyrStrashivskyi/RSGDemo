@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: FireScenarioConfig
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireScenarioConfig
   _ignitions:
-  - <SpotId>k__BackingField: Living_Sofa
+  - <SpotId>k__BackingField: Sofa
     <Delay>k__BackingField: 0
-  - <SpotId>k__BackingField: Hall_CoatRack
+  - <SpotId>k__BackingField: CoatRack
     <Delay>k__BackingField: 0
   - <SpotId>k__BackingField: Kitchen_Stove
     <Delay>k__BackingField: 0
-  - <SpotId>k__BackingField: Bedroom_Bed
+  - <SpotId>k__BackingField: Bed_Double
     <Delay>k__BackingField: 0
   - <SpotId>k__BackingField: Facade_LivingWindow
     <Delay>k__BackingField: 0
@@ -27,7 +27,7 @@ MonoBehaviour:
     <Delay>k__BackingField: 0
   - <SpotId>k__BackingField: Facade_KitchenWindow
     <Delay>k__BackingField: 30
-  - <SpotId>k__BackingField: Study_Desk
+  - <SpotId>k__BackingField: Desk_Study
     <Delay>k__BackingField: 45
-  - <SpotId>k__BackingField: Kids_Bed
+  - <SpotId>k__BackingField: Bed_Single
     <Delay>k__BackingField: 75

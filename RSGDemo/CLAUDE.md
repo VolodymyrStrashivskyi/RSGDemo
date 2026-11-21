@@ -31,6 +31,7 @@ Unity **6000.5.3f1**, URP, PC (Windows).
 
 - **DI** — VContainer 1.19.0 (скіл `vcontainer`)
 - **Асинхронність** — UniTask 2.5.11, скрізь замість `Task` і корутин (скіл `unitask`)
+- **Важкі обчислення** — Burst 1.8.29 + C# Job System (`IJobParallelFor`, `NativeArray`); зараз — 3D-текстура обвуглення будинку
 - **Анімації кодом** — PrimeTween 1.5.2, scoped registry `npmjs.org`, скоуп `com.kyrylokuzyk` (скіл `primetween`)
 - **UI-текст** — лише `TextMeshProUGUI` (`TMPro`, входить у `com.unity.ugui`); легасі `UnityEngine.UI.Text` не використовуємо. Ресурси TMP — `Assets/TextMesh Pro/`
 - **UI-спрайти** — генеровані в `Art/Textures/UI/` (`UI_RoundedRect` — 9-slice для панелей і смуг; заповнення смуги — через `anchorMax`, не `fillAmount`)
@@ -53,7 +54,7 @@ Assets/_Project/
 │   └── Textures/
 ├── Configs/                      # Екземпляри ScriptableObject (.asset)
 ├── Develop/                      # УВЕСЬ код проєкту
-│   ├── Editor/                   # Editor-only (EntryPointSceneAutoLoader)
+│   ├── Editor/                   # Editor-only (EntryPointSceneAutoLoader, розділення скла вікон); Fire/ — вікно генератора осередків вогню
 │   └── Runtime/                  # Код, що потрапляє в білд
 │       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/, Input/, Raycast/)
 │       ├── Data/Configs/         # Класи всіх ScriptableObject-конфігів (не в папках фіч)
@@ -64,13 +65,13 @@ Assets/_Project/
 │       │   ├── WaterSupply/      # Модель ланцюга води (чистий C#): гідрант → лінія → насос ← бак, збої з ініціатором
 │       │   ├── Hoses/            # Спільне для шлангів (фізика мотузки, слід гравця, меш, муфта, сокет); Supply/ — жовтий шланг, Attack/ — червоний з котушки і ствол
 │       │   ├── WaterStream/      # Візуал струменя води: балістична дуга, меш, бризки, сплеск, калюжі (гідрант і ствол); IWaterImpacts — куди влучила вода
-│       │   ├── Fire/             # Модель вогню (чистий C#): осередки FireSpot, FireSystem — поширення, гасіння літрами, повторний спалах
+│       │   ├── Fire/             # Модель вогню (чистий C#): осередки FireSpot, FireSystem — поширення, гасіння літрами, повторний спалах, згорання; обвуглення через шейдер Burnable
 │       │   ├── House/Doors/      # Модуль будинку; двері (IInteractable)
 │       │   ├── UI/Hud/           # Canvas, приціл (View + Presenter), Factory/
 │       │   ├── FireTruck/, Hydrant/, Street/   # Кожна з Factory/
 │       │   └── Level/            # WorldTag (точки спавну)
 │       ├── Infrastructure/       # Точки входу; DI/ — LifetimeScope-и
-│       └── Utils/                # Статичні розширення без стану
+│       └── Utils/                # Статичні розширення без стану (`Smoothing` — згладжування незалежно від FPS, `VectorExtensions` — вектори без висоти)
 ├── Prefabs/                      # RootLifetimeScope.prefab та префаби гри
 ├── Resources/                    # Лише те, що вантажиться синхронно на старті
 └── Scenes/                       # Boot, Gameplay

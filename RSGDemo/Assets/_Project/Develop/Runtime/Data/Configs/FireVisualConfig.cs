@@ -49,7 +49,23 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField, Min(0), Tooltip("Steam puffs released when a spot goes out for good")]
         public int ExtinguishSteamBurst { get; private set; } = 45;
 
+        [field: Header("Char")]
+        [field: SerializeField, Min(0f), Tooltip("How far past its radius a burning spot chars walls, floors and furniture, m")]
+        public float CharReach { get; private set; } = 1.3f;
+        [field: SerializeField, Min(0f), Tooltip("Extra char reach per metre of spot radius, m")]
+        public float CharReachPerRadius { get; private set; } = 1.5f;
+        [field: SerializeField, Min(1f), Tooltip("How much darker surfaces look than the fuel burned; 1 shows the burned share as is")]
+        public float CharGain { get; private set; } = 3f;
+        [field: SerializeField, Range(0.1f, 1f), Tooltip("Cell size of the char volume around the house, m")]
+        public float CharVoxelSize { get; private set; } = 0.3f;
+        [field: SerializeField, Min(1f), Tooltip("How often the char volume is refreshed, 1/s")]
+        public float CharUpdateRate { get; private set; } = 10f;
+
         [field: Header("Light")]
+        [field: SerializeField, Min(0), Tooltip("Most fire lights lit at once; the brightest spots closest to the player get them")]
+        public int MaxLights { get; private set; } = 8;
+        [field: SerializeField, Min(0f), Tooltip("How fast a fire loses its claim on a light with distance from the player, 1/m2")]
+        public float LightDistanceFalloff { get; private set; } = 0.05f;
         [field: SerializeField, Min(0f), Tooltip("Light intensity at full heat")]
         public float LightIntensity { get; private set; } = 1.8f;
         [field: SerializeField, Min(0f), Tooltip("Light range around a spot, m")]

@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Data.Configs;
+using _Project.Develop.Runtime.Utils;
 using UnityEngine;
 using VContainer;
 
@@ -24,12 +25,18 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
         private float _steamRate;
         private float _waterThisFrame;
         private float _flickerSeed;
+        private bool _isLightAllowed;
 
         [Inject]
         public void Construct(FireVisualConfig config) =>
             _config = config;
 
         public FireSpot Spot => _spot;
+
+        public float LightLevel { get; private set; }
+
+        public void SetLightAllowed(bool isAllowed) =>
+            _isLightAllowed = isAllowed;
 
         public void Bind(FireSpot spot)
         {
@@ -68,8 +75,11 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
             if (deltaTime <= 0f)
                 return;
 
+            if (_spot.IsMovable)
+                transform.SetPositionAndRotation(_spot.Position, Quaternion.identity);
+
             float heat = _spot.IsBurning ? _spot.Heat : 0f;
-            _flameLevel = Mathf.Lerp(_flameLevel, heat, 1f - Mathf.Exp(-_config.HeatSharpness * deltaTime));
+            _flameLevel = Mathf.Lerp(_flameLevel, heat, Smoothing.GetBlend(_config.HeatSharpness, deltaTime));
             float embers = _spot.State == FireState.Smoldering ? _spot.Embers : 0f;
 
             UpdateFlames();
@@ -132,16 +142,17 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
         {
             float targetRate = Mathf.Min(_waterThisFrame / deltaTime * _config.SteamPerLiter, _config.MaxSteamRate);
             _waterThisFrame = 0f;
-            _steamRate = Mathf.Lerp(_steamRate, targetRate, 1f - Mathf.Exp(-_config.SteamSharpness * deltaTime));
+            _steamRate = Mathf.Lerp(_steamRate, targetRate, Smoothing.GetBlend(_config.SteamSharpness, deltaTime));
             SetRate(_steam, _steamRate);
         }
 
         private void UpdateLight(float embers)
         {
             float level = _flameLevel + embers * _config.EmberLightShare;
+            LightLevel = level;
             float flicker = (Mathf.PerlinNoise(Time.time * _config.FlickerFrequency, _flickerSeed) - HALF) * FLICKER_RANGE;
             _light.intensity = _config.LightIntensity * level * (1f + flicker * _config.FlickerDepth);
-            _light.enabled = _light.intensity > 0f;
+            _light.enabled = _isLightAllowed && _light.intensity > 0f;
         }
 
         private void OnFlaredUp(FireSpot spot) =>

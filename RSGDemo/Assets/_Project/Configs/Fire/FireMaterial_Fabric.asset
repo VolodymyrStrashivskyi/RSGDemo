@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireMaterialConfig
   <IgnitionHeat>k__BackingField: 0.5
   <GrowthRate>k__BackingField: 0.06
+  <BurnDuration>k__BackingField: 110
   <LitersToCool>k__BackingField: 25
   <LitersToDouse>k__BackingField: 10
   <ReigniteDelay>k__BackingField: 4
   <ReigniteHeat>k__BackingField: 0.6
   <SpreadRadius>k__BackingField: 3.5
-  <SpreadTime>k__BackingField: 18
+  <SpreadTime>k__BackingField: 40
   <SpreadMinHeat>k__BackingField: 0.4

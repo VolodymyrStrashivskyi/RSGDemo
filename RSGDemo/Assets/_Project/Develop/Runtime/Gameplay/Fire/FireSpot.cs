@@ -9,33 +9,40 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
         private const float FULL_HEAT = 1f;
         private const float FULL_EMBERS = 1f;
         private const float FULL_IGNITION = 1f;
+        private const float FULL_FUEL = 1f;
 
         public event Action<FireSpot> Ignited;
         public event Action<FireSpot> Smoldered;
         public event Action<FireSpot> Extinguished;
         public event Action<FireSpot> Reignited;
+        public event Action<FireSpot> BurnedOut;
         public event Action<FireSpot, float> Watered;
+        public event Action<FireSpot> Moved;
 
         private float _timeSinceWater;
 
-        public FireSpot(string id, Vector3 position, float radius, float height, FireMaterialConfig material)
+        public FireSpot(string id, Vector3 position, float radius, float height, FireMaterialConfig material, bool isMovable = false)
         {
             Id = id;
             Position = position;
             Radius = radius;
             Height = height;
             Material = material;
+            IsMovable = isMovable;
+            Fuel = FULL_FUEL;
         }
 
         public string Id { get; }
 
-        public Vector3 Position { get; }
+        public Vector3 Position { get; private set; }
 
         public float Radius { get; }
 
         public float Height { get; }
 
         public FireMaterialConfig Material { get; }
+
+        public bool IsMovable { get; }
 
         public FireState State { get; private set; }
 
@@ -45,11 +52,24 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
 
         public float IgnitionProgress { get; private set; }
 
+        public float Fuel { get; private set; }
+
+        public float Char => FULL_FUEL - Fuel;
+
         public bool IsBurning => State == FireState.Burning;
 
         public bool IsActive => State == FireState.Burning || State == FireState.Smoldering;
 
         public Vector3 Top => Position + Vector3.up * Height;
+
+        public void MoveTo(Vector3 position)
+        {
+            if (IsMovable == false || position == Position)
+                return;
+
+            Position = position;
+            Moved?.Invoke(this);
+        }
 
         public void Ignite()
         {
@@ -103,9 +123,17 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
             _timeSinceWater += deltaTime;
 
             if (State == FireState.Burning)
-                Heat = Mathf.MoveTowards(Heat, FULL_HEAT, Material.GrowthRate * deltaTime);
+                Burn(deltaTime);
             else if (State == FireState.Smoldering && _timeSinceWater >= Material.ReigniteDelay)
                 Reignite();
+        }
+
+        public float GetGlow(float emberShare)
+        {
+            if (IsBurning)
+                return Heat;
+
+            return State == FireState.Smoldering ? Embers * emberShare : 0f;
         }
 
         public float GetDistanceTo(Vector3 point)
@@ -113,6 +141,20 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
             float height = Mathf.Clamp(point.y - Position.y, 0f, Height);
             Vector3 closest = Position + Vector3.up * height;
             return Mathf.Max(0f, Vector3.Distance(point, closest) - Radius);
+        }
+
+        private void Burn(float deltaTime)
+        {
+            Heat = Mathf.MoveTowards(Heat, FULL_HEAT, Material.GrowthRate * deltaTime);
+            Fuel = Mathf.Max(0f, Fuel - Heat * deltaTime / Material.BurnDuration);
+
+            if (Fuel > 0f)
+                return;
+
+            Heat = 0f;
+            Embers = 0f;
+            State = FireState.BurnedOut;
+            BurnedOut?.Invoke(this);
         }
 
         private void StartBurning(float heat)

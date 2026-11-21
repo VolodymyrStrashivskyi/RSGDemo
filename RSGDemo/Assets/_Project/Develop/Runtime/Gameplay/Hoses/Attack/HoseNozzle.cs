@@ -4,6 +4,7 @@ using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
 using _Project.Develop.Runtime.Gameplay.Interaction;
 using PrimeTween;
+using _Project.Develop.Runtime.Utils;
 using UnityEngine;
 using VContainer;
 
@@ -155,7 +156,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
                 return;
 
             _aimRotation = GetAimRotation(_aimDirection);
-            float blend = 1f - Mathf.Exp(-_config.AimSharpness * Time.deltaTime);
+            float blend = Smoothing.GetBlend(_config.AimSharpness, Time.deltaTime);
             Quaternion rotation = Quaternion.Slerp(transform.localRotation, _aimRotation, blend);
             transform.SetLocalPositionAndRotation(GetHoldPosition(rotation), rotation);
         }

@@ -5,6 +5,7 @@ namespace _Project.Develop.Runtime.Gameplay.Fire
         Unlit,
         Burning,
         Smoldering,
-        Extinguished
+        Extinguished,
+        BurnedOut
     }
 }

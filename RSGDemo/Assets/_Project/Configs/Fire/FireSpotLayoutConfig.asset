@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447f9fb4bbb0f0147b2303518f5b87e3, type: 3}
+  m_Name: FireSpotLayoutConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireSpotLayoutConfig
+  <PropRules>k__BackingField:
+  - <NamePrefix>k__BackingField: Sofa
+    <Material>k__BackingField: {fileID: 11400000, guid: adef17e45e600f14581df405e19be2ee, type: 2}
+  - <NamePrefix>k__BackingField: Armchair
+    <Material>k__BackingField: {fileID: 11400000, guid: adef17e45e600f14581df405e19be2ee, type: 2}
+  - <NamePrefix>k__BackingField: Bed_
+    <Material>k__BackingField: {fileID: 11400000, guid: adef17e45e600f14581df405e19be2ee, type: 2}
+  - <NamePrefix>k__BackingField: LaundryBasket
+    <Material>k__BackingField: {fileID: 11400000, guid: adef17e45e600f14581df405e19be2ee, type: 2}
+  - <NamePrefix>k__BackingField: Plant_
+    <Material>k__BackingField: {fileID: 11400000, guid: adef17e45e600f14581df405e19be2ee, type: 2}
+  - <NamePrefix>k__BackingField: StorageBox
+    <Material>k__BackingField: {fileID: 11400000, guid: adef17e45e600f14581df405e19be2ee, type: 2}
+  - <NamePrefix>k__BackingField: CoatRack
+    <Material>k__BackingField: {fileID: 11400000, guid: adef17e45e600f14581df405e19be2ee, type: 2}
+  - <NamePrefix>k__BackingField: Bookshelf
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: Chair_
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: CoffeeTable
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: Desk
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: DiningTable
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: Door_
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: BackDoor
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: FrontDoor
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: Dresser
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: Nightstand
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: ShoeBench
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: SideTable
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: Wardrobe
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: Vanity
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: FireplaceLogs
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  - <NamePrefix>k__BackingField: ToyBox
+    <Material>k__BackingField: {fileID: 11400000, guid: bcdf2a7a801baa74e818dc22b38b3138, type: 2}
+  <PropRadiusShare>k__BackingField: 0.8
+  <PropMinRadius>k__BackingField: 0.2
+  <PropMaxRadius>k__BackingField: 0.9
+  <PropMinHeight>k__BackingField: 0.4
+  <PropMaxHeight>k__BackingField: 2
+  <StructureMaterial>k__BackingField: {fileID: 11400000, guid: eb77cf4e13542bb408aad7d07dcd0619, type: 2}
+  <PlaceWalls>k__BackingField: 1
+  <WallSpacing>k__BackingField: 2.4
+  <WallRadius>k__BackingField: 0.5
+  <PlaceFacades>k__BackingField: 1
+  <FacadeSpacing>k__BackingField: 3
+  <FacadeRadius>k__BackingField: 0.5
+  <PlaceRoof>k__BackingField: 1
+  <RoofSpacing>k__BackingField: 3
+  <RoofRadius>k__BackingField: 0.9
+  <RoofFlameHeight>k__BackingField: 0.8

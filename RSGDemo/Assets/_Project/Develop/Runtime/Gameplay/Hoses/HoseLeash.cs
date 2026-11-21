@@ -1,4 +1,5 @@
 using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
+using _Project.Develop.Runtime.Utils;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses
@@ -50,6 +51,6 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         }
 
         private static Vector2 GetPlanarOffset(Vector3 from, Vector3 to) =>
-            new Vector2(to.x - from.x, to.z - from.z);
+            (to - from).ToGroundPlane();
     }
 }

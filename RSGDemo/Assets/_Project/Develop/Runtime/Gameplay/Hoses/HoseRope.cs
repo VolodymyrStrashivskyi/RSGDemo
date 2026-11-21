@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Common.Raycast;
 using _Project.Develop.Runtime.Data.Configs;
+using _Project.Develop.Runtime.Utils;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses
@@ -250,8 +251,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
                 float along = (nodeDistance - pathDistance) / Mathf.Max(pathSegment, MIN_DISTANCE);
                 Vector3 target = Vector3.Lerp(_guide[pathIndex], _guide[pathIndex - 1], along);
-                Vector3 pull = (target - _positions[i]) * _settings.TrailPull;
-                pull.y = 0f;
+                Vector3 pull = ((target - _positions[i]) * _settings.TrailPull).WithoutHeight();
                 _positions[i] += pull;
                 _previousPositions[i] += pull;
             }
@@ -330,7 +330,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         private void MarkWrapIfPushedSideways(int index, Vector3 push)
         {
-            if (new Vector2(push.x, push.z).sqrMagnitude > MIN_WRAP_PUSH * MIN_WRAP_PUSH)
+            if (push.ToGroundPlane().sqrMagnitude > MIN_WRAP_PUSH * MIN_WRAP_PUSH)
                 _wrapsObstacle[index] = true;
         }
 

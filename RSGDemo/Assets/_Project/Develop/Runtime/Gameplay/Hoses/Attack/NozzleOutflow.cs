@@ -1,6 +1,7 @@
 using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.WaterStream;
 using _Project.Develop.Runtime.Gameplay.WaterSupply;
+using _Project.Develop.Runtime.Utils;
 using UnityEngine;
 using VContainer;
 
@@ -34,7 +35,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 
             float targetFlow = isOpen ? GetDeliveredShare() : 0f;
             float sharpness = targetFlow > _stream.Flow ? _config.FlowOpenSharpness : _config.FlowCloseSharpness;
-            float blend = 1f - Mathf.Exp(-sharpness * Time.deltaTime);
+            float blend = Smoothing.GetBlend(sharpness, Time.deltaTime);
             _stream.Flow = Mathf.Lerp(_stream.Flow, targetFlow, blend);
             _stream.Follow(_nozzle.Tip, _nozzle.FirstPersonMuzzle);
             _nozzle.SetReaction(GetReactionForce());

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Interaction;
 using _Project.Develop.Runtime.Gameplay.WaterStream;
+using _Project.Develop.Runtime.Utils;
 using UnityEngine;
 using VContainer;
 
@@ -41,7 +42,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
 
         public void Move(Vector3 direction, bool isRunning)
         {
-            Vector3 planarDirection = new Vector3(direction.x, 0f, direction.z);
+            Vector3 planarDirection = direction.WithoutHeight();
             _moveDirection = Vector3.ClampMagnitude(planarDirection, 1f);
             _isRunning = isRunning;
         }
@@ -68,11 +69,11 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
             _constraints.Remove(constraint);
 
         public void SetRecoilForce(Vector3 force) =>
-            _recoilForce = new Vector3(force.x, 0f, force.z);
+            _recoilForce = force.WithoutHeight();
 
         public void AddWaterPush(Vector3 impulse)
         {
-            Vector3 planarImpulse = new Vector3(impulse.x, 0f, impulse.z);
+            Vector3 planarImpulse = impulse.WithoutHeight();
             _pushVelocity = Vector3.ClampMagnitude(_pushVelocity + planarImpulse / _config.Mass, _config.MaxPushSpeed);
         }
 
@@ -106,7 +107,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
         private void DampPush()
         {
             float drag = _characterController.isGrounded ? _config.PushGroundDrag : _config.PushAirDrag;
-            _pushVelocity *= Mathf.Exp(-drag * Time.deltaTime);
+            _pushVelocity *= Smoothing.GetDecay(drag, Time.deltaTime);
         }
 
         private void ApplyRecoil()
@@ -127,7 +128,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
                 return displacement;
 
             Vector3 currentPosition = transform.position;
-            Vector3 desiredPosition = currentPosition + new Vector3(displacement.x, 0f, displacement.z);
+            Vector3 desiredPosition = currentPosition + displacement.WithoutHeight();
 
             foreach (IMovementConstraint constraint in _constraints)
                 desiredPosition = constraint.Constrain(currentPosition, desiredPosition);
@@ -140,7 +141,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Body
             if (Time.deltaTime <= 0f)
                 return 0f;
 
-            Vector3 planarDisplacement = new Vector3(displacement.x, 0f, displacement.z);
+            Vector3 planarDisplacement = displacement.WithoutHeight();
             return planarDisplacement.magnitude / Time.deltaTime;
         }
     }

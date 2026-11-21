@@ -35,6 +35,8 @@ namespace _Project.Develop.Runtime.Infrastructure
         private IHudFactory _hudFactory;
         private IFireFactory _fireFactory;
         private IFireOutbreak _fireOutbreak;
+        private IFireLightBudget _fireLightBudget;
+        private IFireCharVolume _fireCharVolume;
         private CrosshairPresenter _crosshairPresenter;
         private WaterStatusPresenter _waterStatusPresenter;
 
@@ -51,6 +53,8 @@ namespace _Project.Develop.Runtime.Infrastructure
             IHudFactory hudFactory,
             IFireFactory fireFactory,
             IFireOutbreak fireOutbreak,
+            IFireLightBudget fireLightBudget,
+            IFireCharVolume fireCharVolume,
             CrosshairPresenter crosshairPresenter,
             WaterStatusPresenter waterStatusPresenter)
         {
@@ -65,6 +69,8 @@ namespace _Project.Develop.Runtime.Infrastructure
             _hudFactory = hudFactory;
             _fireFactory = fireFactory;
             _fireOutbreak = fireOutbreak;
+            _fireLightBudget = fireLightBudget;
+            _fireCharVolume = fireCharVolume;
             _crosshairPresenter = crosshairPresenter;
             _waterStatusPresenter = waterStatusPresenter;
         }
@@ -76,6 +82,7 @@ namespace _Project.Develop.Runtime.Infrastructure
         {
             StreetView street = await _streetFactory.CreateAsync();
             await _fireFactory.CreateAsync(street.House.FireSpots);
+            _fireCharVolume.Build(street.House.transform);
             FireTruckView truck = await _fireTruckFactory.CreateAsync();
             await _hydrantFactory.CreateAsync();
             await _supplyHoseFactory.CreateAsync(truck.IntakePoint, truck.HoseLayPoint);
@@ -84,6 +91,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             FirefighterBody body = await _firefighterFactory.CreateAsync();
             FirstPersonCamera camera = await _cameraFactory.CreateAsync(body.HeadPoint);
             _firefighterCoordinator.Bind(body, camera);
+            _fireLightBudget.SetViewer(camera.transform);
 
             HudView hud = await _hudFactory.CreateAsync();
             _crosshairPresenter.Bind(hud.Crosshair);

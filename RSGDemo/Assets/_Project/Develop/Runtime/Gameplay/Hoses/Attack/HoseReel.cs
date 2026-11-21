@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Data.Configs;
+using _Project.Develop.Runtime.Utils;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
@@ -52,7 +53,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 
         public void Wind(float woundLength, float deltaTime)
         {
-            float blend = 1f - Mathf.Exp(-_config.ReelSpinSharpness * deltaTime);
+            float blend = Smoothing.GetBlend(_config.ReelSpinSharpness, deltaTime);
             _shownLength = Mathf.Lerp(_shownLength, woundLength, blend);
             Refresh();
         }

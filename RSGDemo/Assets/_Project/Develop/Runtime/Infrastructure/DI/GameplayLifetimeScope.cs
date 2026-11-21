@@ -74,6 +74,9 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.Register<IWaterImpacts, WaterImpacts>(Lifetime.Singleton);
             builder.RegisterEntryPoint<FireSystem>().As<IFireSystem>();
             builder.Register<IFireOutbreak, FireOutbreak>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<FireLightBudget>().As<IFireLightBudget>();
+            builder.RegisterEntryPoint<FireCharVolume>().As<IFireCharVolume>();
+            builder.RegisterEntryPoint<FireMovingCharZones>();
 
             builder.Register<Grabber>(Lifetime.Singleton);
             builder.Register<IInteractionScanner, InteractionScanner>(Lifetime.Singleton);

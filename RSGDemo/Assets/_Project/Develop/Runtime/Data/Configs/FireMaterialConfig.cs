@@ -11,6 +11,9 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField, Min(0f), Tooltip("How fast an unattended fire grows to full heat, share per second")]
         public float GrowthRate { get; private set; } = 0.03f;
 
+        [field: SerializeField, Min(1f), Tooltip("Seconds of full-heat burning until everything here has burned away for good")]
+        public float BurnDuration { get; private set; } = 180f;
+
         [field: Header("Water")]
         [field: SerializeField, Min(1f), Tooltip("Water that knocks a fully grown fire down to embers, L")]
         public float LitersToCool { get; private set; } = 150f;
