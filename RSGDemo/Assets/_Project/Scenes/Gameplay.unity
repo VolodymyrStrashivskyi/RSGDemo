@@ -511,6 +511,9 @@ MonoBehaviour:
   _supplyHoseConfig: {fileID: 11400000, guid: bda143272e9bc1244a3ed118c8301499, type: 2}
   _waterStreamConfig: {fileID: 11400000, guid: 5da840afde181f44fb9cf0b487edcef7, type: 2}
   _attackHoseConfig: {fileID: 11400000, guid: 084fb04af31aede4d8557d3d7cce2811, type: 2}
+  _fireConfig: {fileID: 11400000, guid: b0a97c0777c42cb4c9a5ef299a202fd4, type: 2}
+  _fireVisualConfig: {fileID: 11400000, guid: 6a78a468f4a69254084794b135151037, type: 2}
+  _fireScenarioConfig: {fileID: 11400000, guid: 35df18524c01c1c4ba2e89a0c557b31b, type: 2}
   _worldTag: {fileID: 472227897}
 --- !u!1 &1421651622
 GameObject:

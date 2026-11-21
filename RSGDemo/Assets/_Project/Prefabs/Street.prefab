@@ -57,6 +57,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7eece470ad14fa74f8552cd9237cf70b, type: 3}
+--- !u!114 &4174379583648288614 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4202225213682801162, guid: 7eece470ad14fa74f8552cd9237cf70b, type: 3}
+  m_PrefabInstance: {fileID: 269984582374200684}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 147f573ac971af042be4924f667911f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.House.HouseView
 --- !u!4 &4397843417144655498 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4519198147973311462, guid: 7eece470ad14fa74f8552cd9237cf70b, type: 3}
@@ -1037,6 +1048,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6694038016937127656}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: fb985657ad4282642a2e45a88a13a7b5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4864880256076107285}
     - targetCorrespondingSourceObject: {fileID: -6434143909009670653, guid: fb985657ad4282642a2e45a88a13a7b5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5243005852614850668}
@@ -4573,6 +4587,24 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 347964855830057308, guid: fb985657ad4282642a2e45a88a13a7b5, type: 3}
+--- !u!1 &6787172058739336925 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fb985657ad4282642a2e45a88a13a7b5, type: 3}
+  m_PrefabInstance: {fileID: 5976708637002849164}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4864880256076107285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6787172058739336925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c459b5cd0564e9549ba2f6cef664f5de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Street.StreetView
+  _house: {fileID: 4174379583648288614}
 --- !u!1 &6802366841955338049 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 907286538758692045, guid: fb985657ad4282642a2e45a88a13a7b5, type: 3}

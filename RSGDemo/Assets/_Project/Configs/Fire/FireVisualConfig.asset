@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfa89a848801b4a4d8ef6738a3afc462, type: 3}
+  m_Name: FireVisualConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireVisualConfig
+  <FlameRatePerRadius>k__BackingField: 140
+  <FlameSizePerRadius>k__BackingField: 2.2
+  <MinFlameScale>k__BackingField: 0.5
+  <MinFlameRise>k__BackingField: 0.4
+  <HeatSharpness>k__BackingField: 4
+  <SparkRate>k__BackingField: 14
+  <IgnitionSparkBurst>k__BackingField: 30
+  <EmberRatePerRadius>k__BackingField: 80
+  <SmokeRatePerRadius>k__BackingField: 9
+  <SmolderSmokeRatePerRadius>k__BackingField: 16
+  <BurningSmokeColor>k__BackingField: {r: 0.12, g: 0.11, b: 0.1, a: 0.75}
+  <SmolderSmokeColor>k__BackingField: {r: 0.6, g: 0.6, b: 0.6, a: 0.7}
+  <SmokeStartHeight>k__BackingField: 0.8
+  <SteamPerLiter>k__BackingField: 3
+  <MaxSteamRate>k__BackingField: 70
+  <SteamSharpness>k__BackingField: 6
+  <SmolderSteamBurst>k__BackingField: 25
+  <ExtinguishSteamBurst>k__BackingField: 45
+  <LightIntensity>k__BackingField: 1.8
+  <LightRange>k__BackingField: 2.5
+  <LightRangePerRadius>k__BackingField: 4
+  <EmberLightShare>k__BackingField: 0.35
+  <FlickerFrequency>k__BackingField: 7
+  <FlickerDepth>k__BackingField: 0.35

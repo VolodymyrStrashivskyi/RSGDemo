@@ -21,6 +21,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         {
             _waterSupplyChain = waterSupplyChain;
             _config = config;
+            _stream.FullFlowRate = config.NozzleFlowRate;
         }
 
         private void Update()

@@ -1,3 +1,5 @@
+using _Project.Develop.Runtime.Gameplay.Fire;
+using _Project.Develop.Runtime.Gameplay.Fire.Factory;
 using _Project.Develop.Runtime.Gameplay.FireTruck;
 using _Project.Develop.Runtime.Gameplay.FireTruck.Factory;
 using _Project.Develop.Runtime.Gameplay.Firefighter;
@@ -12,6 +14,7 @@ using _Project.Develop.Runtime.Gameplay.UI.Hud.Crosshair;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.WaterStatus;
 using _Project.Develop.Runtime.Gameplay.Hydrant.Factory;
+using _Project.Develop.Runtime.Gameplay.Street;
 using _Project.Develop.Runtime.Gameplay.Street.Factory;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -30,6 +33,8 @@ namespace _Project.Develop.Runtime.Infrastructure
         private IFirstPersonCameraFactory _cameraFactory;
         private IFirefighterCoordinator _firefighterCoordinator;
         private IHudFactory _hudFactory;
+        private IFireFactory _fireFactory;
+        private IFireOutbreak _fireOutbreak;
         private CrosshairPresenter _crosshairPresenter;
         private WaterStatusPresenter _waterStatusPresenter;
 
@@ -44,6 +49,8 @@ namespace _Project.Develop.Runtime.Infrastructure
             IFirstPersonCameraFactory cameraFactory,
             IFirefighterCoordinator firefighterCoordinator,
             IHudFactory hudFactory,
+            IFireFactory fireFactory,
+            IFireOutbreak fireOutbreak,
             CrosshairPresenter crosshairPresenter,
             WaterStatusPresenter waterStatusPresenter)
         {
@@ -56,6 +63,8 @@ namespace _Project.Develop.Runtime.Infrastructure
             _cameraFactory = cameraFactory;
             _firefighterCoordinator = firefighterCoordinator;
             _hudFactory = hudFactory;
+            _fireFactory = fireFactory;
+            _fireOutbreak = fireOutbreak;
             _crosshairPresenter = crosshairPresenter;
             _waterStatusPresenter = waterStatusPresenter;
         }
@@ -65,7 +74,8 @@ namespace _Project.Develop.Runtime.Infrastructure
 
         private async UniTaskVoid BuildLevelAsync()
         {
-            await _streetFactory.CreateAsync();
+            StreetView street = await _streetFactory.CreateAsync();
+            await _fireFactory.CreateAsync(street.House.FireSpots);
             FireTruckView truck = await _fireTruckFactory.CreateAsync();
             await _hydrantFactory.CreateAsync();
             await _supplyHoseFactory.CreateAsync(truck.IntakePoint, truck.HoseLayPoint);
@@ -80,6 +90,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             _waterStatusPresenter.Bind(hud.WaterStatus);
 
             _firefighterCoordinator.Enable();
+            _fireOutbreak.StartAsync(destroyCancellationToken).Forget();
         }
     }
 }

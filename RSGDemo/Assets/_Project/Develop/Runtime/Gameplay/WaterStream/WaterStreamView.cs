@@ -38,6 +38,7 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
 
         private WaterStreamConfig _config;
         private IRaycastService _raycastService;
+        private IWaterImpacts _waterImpacts;
         private WaterStreamMesh _mesh;
         private WaterStreamMesh _firstPersonMesh;
         private Collider _pushedCollider;
@@ -49,10 +50,11 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
         private float _impactBreakup;
 
         [Inject]
-        public void Construct(WaterStreamConfig config, IRaycastService raycastService)
+        public void Construct(WaterStreamConfig config, IRaycastService raycastService, IWaterImpacts waterImpacts)
         {
             _config = _ownConfig != null ? _ownConfig : config;
             _raycastService = raycastService;
+            _waterImpacts = waterImpacts;
             _mesh = new WaterStreamMesh(_config.Sides);
             _meshFilter.sharedMesh = _mesh.Mesh;
             _visibleLayer = _meshRenderer.gameObject.layer;
@@ -68,6 +70,8 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
         public float Flow { get; set; }
 
         public float ExitSpeed { get; private set; }
+
+        public float FullFlowRate { get; set; }
 
         public void Burst() =>
             _spray.Emit(_config.BurstCount);
@@ -100,7 +104,10 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
             }
 
             if (hasImpact)
+            {
                 Push(impact);
+                ReportImpact(impact);
+            }
 
             _meshRenderer.enabled = isFlowing;
             RenderFirstPersonCopy(isFlowing);
@@ -232,6 +239,14 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
                 pushable.AddWaterPush(impulse);
             else if (impact.rigidbody != null)
                 impact.rigidbody.AddForceAtPosition(impulse, impact.point, ForceMode.Impulse);
+        }
+
+        private void ReportImpact(RaycastHit impact)
+        {
+            float liters = FullFlowRate * Flow * Time.deltaTime;
+
+            if (liters > 0f)
+                _waterImpacts.Report(new WaterImpact(impact.point, liters, _radii[_radii.Count - 1]));
         }
 
         private bool TryGetPushable(Collider target, out IWaterPushable pushable)

@@ -18,11 +18,12 @@ namespace _Project.Develop.Runtime.Gameplay.Hydrant
         private bool _isFlowing;
 
         [Inject]
-        public void Construct(HydrantSource hydrant, SupplyLine supplyLine, WaterStreamConfig config)
+        public void Construct(HydrantSource hydrant, SupplyLine supplyLine, WaterStreamConfig config, WaterSupplyConfig supplyConfig)
         {
             _hydrant = hydrant;
             _supplyLine = supplyLine;
             _config = config;
+            _stream.FullFlowRate = supplyConfig.HydrantOutflowRate;
 
             _hydrant.Opened += OnSupplyChanged;
             _hydrant.Closed += OnSupplyChanged;

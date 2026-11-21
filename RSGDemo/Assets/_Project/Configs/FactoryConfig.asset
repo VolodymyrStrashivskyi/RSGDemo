@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 062b73a3d7a3d174aae1c86e232e57f2, type: 3}
   m_Name: FactoryConfig
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.World.FactoryConfig
-  <StreetPrefab>k__BackingField: {fileID: 6787172058739336925, guid: 6ecbb22f26d71954887545d7a1c74fe8, type: 3}
+  <StreetPrefab>k__BackingField: {fileID: 4864880256076107285, guid: 6ecbb22f26d71954887545d7a1c74fe8, type: 3}
   <FireTruckPrefab>k__BackingField: {fileID: 7203124181431313292, guid: b438509753bc6df44b319e2c81f74fc1, type: 3}
   <HydrantPrefab>k__BackingField: {fileID: 8004474682277292196, guid: 496aefd2600517246986943461df6bea, type: 3}
   <SupplyHosePrefab>k__BackingField: {fileID: 4776897684817179441, guid: b6d50696919e9e6479959f384767bd01, type: 3}
@@ -20,3 +20,4 @@ MonoBehaviour:
   <FirefighterPrefab>k__BackingField: {fileID: 7888143498591889304, guid: f525cc725fbf27c49a94f4db1f975f42, type: 3}
   <CameraPrefab>k__BackingField: {fileID: 1132641676532377631, guid: 144745c2f03453844a8943e6dfb94a38, type: 3}
   <HudPrefab>k__BackingField: {fileID: 5775560322791660979, guid: 55d90fe2dd9fe4b45adb9ee39b6c1148, type: 3}
+  <FireSpotPrefab>k__BackingField: {fileID: 6343025501495265081, guid: a1bddc246ca62c946a275da129b249e1, type: 3}

@@ -1,4 +1,6 @@
 using _Project.Develop.Runtime.Data.Configs;
+using _Project.Develop.Runtime.Gameplay.Fire;
+using _Project.Develop.Runtime.Gameplay.Fire.Factory;
 using _Project.Develop.Runtime.Gameplay.FireTruck.Factory;
 using _Project.Develop.Runtime.Gameplay.Firefighter;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Camera.Factory;
@@ -13,6 +15,7 @@ using _Project.Develop.Runtime.Gameplay.Street.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Crosshair;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.WaterStatus;
+using _Project.Develop.Runtime.Gameplay.WaterStream;
 using _Project.Develop.Runtime.Gameplay.WaterSupply;
 using UnityEngine;
 using VContainer;
@@ -31,6 +34,9 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
         [SerializeField] private SupplyHoseConfig _supplyHoseConfig;
         [SerializeField] private WaterStreamConfig _waterStreamConfig;
         [SerializeField] private AttackHoseConfig _attackHoseConfig;
+        [SerializeField] private FireConfig _fireConfig;
+        [SerializeField] private FireVisualConfig _fireVisualConfig;
+        [SerializeField] private FireScenarioConfig _fireScenarioConfig;
         [SerializeField] private WorldTag _worldTag;
 
         protected override void Configure(IContainerBuilder builder)
@@ -44,6 +50,9 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.RegisterInstance(_supplyHoseConfig);
             builder.RegisterInstance(_waterStreamConfig);
             builder.RegisterInstance(_attackHoseConfig);
+            builder.RegisterInstance(_fireConfig);
+            builder.RegisterInstance(_fireVisualConfig);
+            builder.RegisterInstance(_fireScenarioConfig);
             builder.RegisterComponent(_worldTag);
 
             builder.Register<IStreetFactory, StreetFactory>(Lifetime.Singleton);
@@ -54,12 +63,17 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.Register<IFirefighterFactory, FirefighterFactory>(Lifetime.Singleton);
             builder.Register<IFirstPersonCameraFactory, FirstPersonCameraFactory>(Lifetime.Singleton);
             builder.Register<IHudFactory, HudFactory>(Lifetime.Singleton);
+            builder.Register<IFireFactory, FireFactory>(Lifetime.Singleton);
 
             builder.Register<HydrantSource>(Lifetime.Singleton);
             builder.Register<WaterTank>(Lifetime.Singleton);
             builder.Register<SupplyLine>(Lifetime.Singleton);
             builder.Register<Pump>(Lifetime.Singleton);
             builder.RegisterEntryPoint<WaterSupplyChain>().As<IWaterSupplyChain>();
+
+            builder.Register<IWaterImpacts, WaterImpacts>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<FireSystem>().As<IFireSystem>();
+            builder.Register<IFireOutbreak, FireOutbreak>(Lifetime.Singleton);
 
             builder.Register<Grabber>(Lifetime.Singleton);
             builder.Register<IInteractionScanner, InteractionScanner>(Lifetime.Singleton);
