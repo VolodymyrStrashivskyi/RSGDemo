@@ -9,6 +9,7 @@ namespace _Project.Develop.Runtime.Common.Input
         bool IsRunning { get; }
         bool IsJumpPressed { get; }
         bool IsInteractPressed { get; }
+        string InteractKeyName { get; }
         bool IsFireHeld { get; }
         int AdjustDirection { get; }
 

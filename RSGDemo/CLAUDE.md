@@ -33,8 +33,8 @@ Unity **6000.5.3f1**, URP, PC (Windows).
 - **Асинхронність** — UniTask 2.5.11, скрізь замість `Task` і корутин (скіл `unitask`)
 - **Важкі обчислення** — Burst 1.8.29 + C# Job System (`IJobParallelFor`, `NativeArray`); зараз — 3D-текстура обвуглення будинку
 - **Анімації кодом** — PrimeTween 1.5.2, scoped registry `npmjs.org`, скоуп `com.kyrylokuzyk` (скіл `primetween`)
-- **UI-текст** — лише `TextMeshProUGUI` (`TMPro`, входить у `com.unity.ugui`); легасі `UnityEngine.UI.Text` не використовуємо. Ресурси TMP — `Assets/TextMesh Pro/`
-- **UI-спрайти** — генеровані в `Art/Textures/UI/` (`UI_RoundedRect` — 9-slice для панелей і смуг; заповнення смуги — через `anchorMax`, не `fillAmount`)
+- **UI-текст** — лише `TextMeshProUGUI` (`TMPro`, входить у `com.unity.ugui`); легасі `UnityEngine.UI.Text` не використовуємо. Ресурси TMP — `Assets/TextMesh Pro/`. Шрифт HUD — Barlow Condensed (OFL, `Art/Fonts/`, TMP-ассети `BarlowCondensed-Bold/SemiBold SDF`)
+- **UI-спрайти** — генеровані в `Art/Textures/UI/` (`UI_RoundedRect` — 9-slice для панелей і смуг, `UI_PanelCut` — панель зі зрізаним кутом, `UI_HazardStripe` — тайлова смуга небезпеки, `UI_Segment` — сегмент смуги, `UI_Icon_*` — іконки (крапля, бак, манометр, попередження, вогонь, галочка); заповнення смуги — через `anchorMax`, не `fillAmount`)
 - **Ввід** — новий Input System; `activeInputHandler` = New only, старий `UnityEngine.Input` кине виняток у рантаймі
 - **Керування редактором** — Unity CLI + пакет `com.unity.pipeline`
 - **Дані** — параметри механік (шланги, бак, тиск, вогонь) у ScriptableObject, без хардкоду

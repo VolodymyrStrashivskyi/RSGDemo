@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 185cd2f5baed1de469d96bc9cb686edf, type: 3}
+  m_Name: WaterStatusConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.WaterStatusConfig
+  <TankSourceLabel>k__BackingField: TANK
+  <HydrantSourceLabel>k__BackingField: HYDRANT
+  <NoWaterLabel>k__BackingField: NO WATER
+  <TankUnit>k__BackingField: '%'
+  <PressureUnit>k__BackingField: ' BAR'
+  <TankColor>k__BackingField: {r: 0.33, g: 0.72, b: 1, a: 1}
+  <PressureColor>k__BackingField: {r: 1, g: 0.69, b: 0.13, a: 1}
+  <WarningColor>k__BackingField: {r: 1, g: 0.27, b: 0.22, a: 1}
+  <EmptySegmentColor>k__BackingField: {r: 1, g: 1, b: 1, a: 0.12}
+  <LowTankRatio>k__BackingField: 0.2
+  <LowTankBlink>k__BackingField:
+    duration: 0.35
+    ease: 4
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: -1
+    cycleMode: 1
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <SourcePunch>k__BackingField:
+    strength: {x: 0.22, y: 0.22, z: 0}
+    duration: 0.4
+    frequency: 8
+    enableFalloff: 1
+    falloffEase: 0
+    strengthOverTime:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    asymmetry: 0
+    easeBetweenShakes: 0
+    cycles: 1
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <SourceFlash>k__BackingField:
+    duration: 0.6
+    ease: 6
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
+  <PressureDropToShake>k__BackingField: 1
+  <PressureDropShake>k__BackingField:
+    strength: {x: 12, y: 6, z: 0}
+    duration: 0.45
+    frequency: 18
+    enableFalloff: 1
+    falloffEase: 0
+    strengthOverTime:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    asymmetry: 0
+    easeBetweenShakes: 0
+    cycles: 1
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0

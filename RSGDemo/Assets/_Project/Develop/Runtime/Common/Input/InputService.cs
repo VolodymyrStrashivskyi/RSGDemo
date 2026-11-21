@@ -1,14 +1,20 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace _Project.Develop.Runtime.Common.Input
 {
     public class InputService : IInputService, IDisposable
     {
+        private const int PRIMARY_BINDING = 0;
+
         private readonly GameInput _gameInput;
 
-        public InputService() =>
+        public InputService()
+        {
             _gameInput = new GameInput();
+            InteractKeyName = GetPhysicalKeyName(_gameInput.Player.Interact);
+        }
 
         public Vector2 Move => _gameInput.Player.Move.ReadValue<Vector2>();
 
@@ -19,6 +25,8 @@ namespace _Project.Develop.Runtime.Common.Input
         public bool IsJumpPressed => _gameInput.Player.Jump.WasPressedThisFrame();
 
         public bool IsInteractPressed => _gameInput.Player.Interact.WasPressedThisFrame();
+
+        public string InteractKeyName { get; }
 
         public bool IsFireHeld => _gameInput.Player.Fire.IsPressed();
 
@@ -32,5 +40,8 @@ namespace _Project.Develop.Runtime.Common.Input
 
         public void Dispose() =>
             _gameInput.Dispose();
+
+        private static string GetPhysicalKeyName(InputAction action) =>
+            InputControlPath.ToHumanReadableString(action.bindings[PRIMARY_BINDING].effectivePath, InputControlPath.HumanReadableStringOptions.OmitDevice);
     }
 }

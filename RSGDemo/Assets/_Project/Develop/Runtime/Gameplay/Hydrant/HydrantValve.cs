@@ -23,6 +23,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hydrant
 
         public bool CanInteract => _tween.isAlive == false;
 
+        public InteractionAction Action => _hydrant.IsOpen ? InteractionAction.CloseValve : InteractionAction.OpenValve;
+
         public void Interact(Transform initiator)
         {
             float direction = _hydrant.IsOpen ? -1f : 1f;

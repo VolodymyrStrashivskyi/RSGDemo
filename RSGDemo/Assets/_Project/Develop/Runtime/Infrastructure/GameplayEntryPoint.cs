@@ -11,6 +11,8 @@ using _Project.Develop.Runtime.Gameplay.Hoses.Attack.Factory;
 using _Project.Develop.Runtime.Gameplay.Hoses.Supply.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Crosshair;
+using _Project.Develop.Runtime.Gameplay.UI.Hud.Dispatch;
+using _Project.Develop.Runtime.Gameplay.UI.Hud.InteractionPrompt;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.WaterStatus;
 using _Project.Develop.Runtime.Gameplay.Hydrant.Factory;
@@ -38,7 +40,9 @@ namespace _Project.Develop.Runtime.Infrastructure
         private IFireLightBudget _fireLightBudget;
         private IFireCharVolume _fireCharVolume;
         private CrosshairPresenter _crosshairPresenter;
+        private InteractionPromptPresenter _interactionPromptPresenter;
         private WaterStatusPresenter _waterStatusPresenter;
+        private DispatchPresenter _dispatchPresenter;
 
         [Inject]
         public void Construct(
@@ -56,7 +60,9 @@ namespace _Project.Develop.Runtime.Infrastructure
             IFireLightBudget fireLightBudget,
             IFireCharVolume fireCharVolume,
             CrosshairPresenter crosshairPresenter,
-            WaterStatusPresenter waterStatusPresenter)
+            InteractionPromptPresenter interactionPromptPresenter,
+            WaterStatusPresenter waterStatusPresenter,
+            DispatchPresenter dispatchPresenter)
         {
             _streetFactory = streetFactory;
             _fireTruckFactory = fireTruckFactory;
@@ -72,7 +78,9 @@ namespace _Project.Develop.Runtime.Infrastructure
             _fireLightBudget = fireLightBudget;
             _fireCharVolume = fireCharVolume;
             _crosshairPresenter = crosshairPresenter;
+            _interactionPromptPresenter = interactionPromptPresenter;
             _waterStatusPresenter = waterStatusPresenter;
+            _dispatchPresenter = dispatchPresenter;
         }
 
         public void Start() =>
@@ -95,7 +103,9 @@ namespace _Project.Develop.Runtime.Infrastructure
 
             HudView hud = await _hudFactory.CreateAsync();
             _crosshairPresenter.Bind(hud.Crosshair);
+            _interactionPromptPresenter.Bind(hud.InteractionPrompt);
             _waterStatusPresenter.Bind(hud.WaterStatus);
+            _dispatchPresenter.Bind(hud.Dispatch);
 
             _firefighterCoordinator.Enable();
             _fireOutbreak.StartAsync(destroyCancellationToken).Forget();

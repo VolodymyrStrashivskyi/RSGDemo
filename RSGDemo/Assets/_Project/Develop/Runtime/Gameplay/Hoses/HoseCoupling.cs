@@ -75,6 +75,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         public bool CanInteract => _grabber.IsHolding() == false;
 
+        public InteractionAction Action => InteractionAction.PickUp;
+
         public void Interact(Transform initiator)
         {
             _holder = initiator.name;

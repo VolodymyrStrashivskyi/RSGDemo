@@ -22,6 +22,8 @@ namespace _Project.Develop.Runtime.Gameplay.House.Doors
 
         public bool CanInteract => true;
 
+        public InteractionAction Action => _isOpen ? InteractionAction.Close : InteractionAction.Open;
+
         public bool IsOpen => _isOpen;
 
         public void Interact(Transform initiator)

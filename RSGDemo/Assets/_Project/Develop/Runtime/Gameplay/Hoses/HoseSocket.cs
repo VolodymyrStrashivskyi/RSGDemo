@@ -21,6 +21,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         public bool CanInteract => IsOccupied == false && TryGetFittingCoupling(out HoseCoupling _);
 
+        public InteractionAction Action => InteractionAction.ConnectHose;
+
         public void Interact(Transform initiator)
         {
             if (IsOccupied || TryGetFittingCoupling(out HoseCoupling coupling) == false)

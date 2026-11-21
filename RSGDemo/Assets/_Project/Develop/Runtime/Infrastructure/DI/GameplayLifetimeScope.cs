@@ -13,6 +13,8 @@ using _Project.Develop.Runtime.Gameplay.Interaction;
 using _Project.Develop.Runtime.Gameplay.Level;
 using _Project.Develop.Runtime.Gameplay.Street.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Crosshair;
+using _Project.Develop.Runtime.Gameplay.UI.Hud.Dispatch;
+using _Project.Develop.Runtime.Gameplay.UI.Hud.InteractionPrompt;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.WaterStatus;
 using _Project.Develop.Runtime.Gameplay.WaterStream;
@@ -30,7 +32,10 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
         [SerializeField] private CameraConfig _cameraConfig;
         [SerializeField] private InteractionConfig _interactionConfig;
         [SerializeField] private CrosshairConfig _crosshairConfig;
+        [SerializeField] private InteractionPromptConfig _interactionPromptConfig;
         [SerializeField] private WaterSupplyConfig _waterSupplyConfig;
+        [SerializeField] private WaterStatusConfig _waterStatusConfig;
+        [SerializeField] private DispatchConfig _dispatchConfig;
         [SerializeField] private SupplyHoseConfig _supplyHoseConfig;
         [SerializeField] private WaterStreamConfig _waterStreamConfig;
         [SerializeField] private AttackHoseConfig _attackHoseConfig;
@@ -46,7 +51,10 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.RegisterInstance(_cameraConfig);
             builder.RegisterInstance(_interactionConfig);
             builder.RegisterInstance(_crosshairConfig);
+            builder.RegisterInstance(_interactionPromptConfig);
             builder.RegisterInstance(_waterSupplyConfig);
+            builder.RegisterInstance(_waterStatusConfig);
+            builder.RegisterInstance(_dispatchConfig);
             builder.RegisterInstance(_supplyHoseConfig);
             builder.RegisterInstance(_waterStreamConfig);
             builder.RegisterInstance(_attackHoseConfig);
@@ -81,7 +89,9 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.Register<Grabber>(Lifetime.Singleton);
             builder.Register<IInteractionScanner, InteractionScanner>(Lifetime.Singleton);
             builder.Register<CrosshairPresenter>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<InteractionPromptPresenter>().AsSelf();
             builder.RegisterEntryPoint<WaterStatusPresenter>().AsSelf();
+            builder.RegisterEntryPoint<DispatchPresenter>().AsSelf();
 
             builder.RegisterEntryPoint<FirefighterCoordinator>().As<IFirefighterCoordinator>();
         }
