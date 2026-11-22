@@ -29,6 +29,8 @@
 
 Unity **6000.5.3f1**, URP, PC (Windows).
 
+- **Рендер** — URP, рендерер `Assets/Settings/PC_Renderer.asset` із фічею Screen Space Ambient Occlusion (затінення кутів; сила й радіус — у налаштуваннях фічі)
+
 - **DI** — VContainer 1.19.0 (скіл `vcontainer`)
 - **Асинхронність** — UniTask 2.5.11, скрізь замість `Task` і корутин (скіл `unitask`)
 - **Важкі обчислення** — Burst 1.8.29 + C# Job System (`IJobParallelFor`, `NativeArray`); зараз — 3D-текстура обвуглення будинку
@@ -54,7 +56,7 @@ Assets/_Project/
 │   └── Textures/
 ├── Configs/                      # Екземпляри ScriptableObject (.asset)
 ├── Develop/                      # УВЕСЬ код проєкту
-│   ├── Editor/                   # Editor-only (EntryPointSceneAutoLoader, розділення скла вікон); Fire/ — вікно генератора осередків вогню
+│   ├── Editor/                   # Editor-only (EntryPointSceneAutoLoader, розділення скла вікон); Fire/ — вікно генератора осередків вогню; Firefighter/ — збирання рук із рукавицями
 │   └── Runtime/                  # Код, що потрапляє в білд
 │       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/, Input/, Raycast/)
 │       ├── Data/Configs/         # Класи всіх ScriptableObject-конфігів (не в папках фіч)

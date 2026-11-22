@@ -29,7 +29,7 @@ MonoBehaviour:
       m_Bits: 1
     <CollisionMask>k__BackingField:
       serializedVersion: 2
-      m_Bits: 1281
+      m_Bits: 3329
     <TrailSpacing>k__BackingField: 0.3
     <TrailPull>k__BackingField: 0.08
     <HollowEscapeDistance>k__BackingField: 0.25
@@ -58,7 +58,7 @@ MonoBehaviour:
   <Subdivisions>k__BackingField: 4
   <RibSpacing>k__BackingField: 0.3
   <RibDepth>k__BackingField: 0.06
-  <PaletteUv>k__BackingField: {x: 0.0625, y: 0.3125}
+  <PaletteUv>k__BackingField: {x: 0.3125, y: 0.1875}
   <InflateDuration>k__BackingField: 1.4
   <DeflateDuration>k__BackingField: 0.9
   <InflationWaveWidth>k__BackingField: 0.15
