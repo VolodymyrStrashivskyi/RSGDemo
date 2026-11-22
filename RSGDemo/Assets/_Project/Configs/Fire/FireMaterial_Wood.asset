@@ -15,8 +15,8 @@ MonoBehaviour:
   <IgnitionHeat>k__BackingField: 0.35
   <GrowthRate>k__BackingField: 0.03
   <BurnDuration>k__BackingField: 190
-  <LitersToCool>k__BackingField: 45
-  <LitersToDouse>k__BackingField: 15
+  <LitersToCool>k__BackingField: 15
+  <LitersToDouse>k__BackingField: 5
   <ReigniteDelay>k__BackingField: 6
   <ReigniteHeat>k__BackingField: 0.5
   <SpreadRadius>k__BackingField: 3

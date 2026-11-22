@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca4ed38e155b0ba4e82038db86e028f2, type: 3}
   m_Name: FireConfig
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireConfig
-  <WaterReach>k__BackingField: 0.8
+  <WaterReach>k__BackingField: 1.2
