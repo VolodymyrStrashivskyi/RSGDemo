@@ -27,6 +27,9 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
         private float _recoilClimbVelocity;
         private float _pitchNoise;
         private float _yawNoise;
+        private Vector3 _tetherPull;
+        private Vector2 _tug;
+        private Vector2 _tugVelocity;
 
         [Inject]
         public void Construct(CameraConfig config)
@@ -55,6 +58,9 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
         public void SetRecoilForce(float force) =>
             _recoilKilonewtons = force / NEWTONS_PER_KILONEWTON;
 
+        public void SetTether(Vector3 pull) =>
+            _tetherPull = pull;
+
         public void Hold(FirstPersonViewModel viewModel)
         {
             _heldViewModel = viewModel;
@@ -80,6 +86,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
                 return;
 
             UpdateRecoilClimb(Time.deltaTime);
+            UpdateTug(Time.deltaTime);
             UpdateShakeNoise();
             ApplyRotation();
             KickHeldItem();
@@ -92,6 +99,18 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
             _recoilClimbVelocity += acceleration * deltaTime;
             _recoilClimb += _recoilClimbVelocity * deltaTime;
         }
+
+        private void UpdateTug(float deltaTime)
+        {
+            Vector3 localPull = GetLocalPull();
+            Vector2 target = new Vector2(-localPull.z * _config.TugPitchDegrees, localPull.x * _config.TugYawDegrees);
+            Vector2 acceleration = (target - _tug) * _config.TugStiffness - _tugVelocity * _config.TugDamping;
+            _tugVelocity += acceleration * deltaTime;
+            _tug += _tugVelocity * deltaTime;
+        }
+
+        private Vector3 GetLocalPull() =>
+            Quaternion.Inverse(PlanarRotation) * _tetherPull;
 
         private void UpdateShakeNoise()
         {
@@ -106,15 +125,17 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter.Camera
                 return;
 
             float sideways = _yawNoise * _recoilKilonewtons * _config.HeldShakePerKilonewton;
-            Vector3 offset = new Vector3(sideways, 0f, -_recoilKilonewtons * _config.HeldKickPerKilonewton);
+            Vector3 localPull = GetLocalPull();
+            Vector3 tug = new Vector3(localPull.x, 0f, localPull.z) * _config.HeldTugDistance;
+            Vector3 offset = new Vector3(sideways, 0f, -_recoilKilonewtons * _config.HeldKickPerKilonewton) + tug;
             _heldViewModel.SetRecoil(offset, _recoilClimb * _config.HeldTiltRatio);
         }
 
         private void ApplyRotation()
         {
-            float shake = _recoilKilonewtons * _config.RecoilShakePerKilonewton;
-            float pitch = Mathf.Clamp(_pitch - _recoilClimb + _pitchNoise * shake, _config.MinPitch, _config.MaxPitch);
-            transform.rotation = Quaternion.Euler(pitch, _yaw + _yawNoise * shake, 0f);
+            float shake = _recoilKilonewtons * _config.RecoilShakePerKilonewton + _tetherPull.magnitude * _config.TugShakeDegrees;
+            float pitch = Mathf.Clamp(_pitch - _recoilClimb - _tug.x + _pitchNoise * shake, _config.MinPitch, _config.MaxPitch);
+            transform.rotation = Quaternion.Euler(pitch, _yaw + _tug.y + _yawNoise * shake, 0f);
         }
 
         private static float GetNoise(float time, float seed) =>

@@ -8,8 +8,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 {
     public class HoseRope
     {
-        private const float FIXED_STEP = 1f / 60f;
-        private const int MAX_STEPS_PER_FRAME = 4;
+        private const float REFERENCE_STEP = 1f / 60f;
+        private const float MAX_STEP_TIME = 1f / 30f;
         private const float GROUND_PROBE_HEIGHT = 0.5f;
         private const float GROUND_PROBE_DISTANCE = 10f;
         private const float CEILING_GAP = 0.01f;
@@ -17,30 +17,40 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private const int PINNED_NODES_PER_END = 2;
         private const int BEND_SPAN = 2;
         private const float PAY_OUT_INSERT_FRACTION = 0.5f;
-        private const float SWEEP_MIN_MOVE_RATIO = 0.5f;
-        private const float SWEEP_SKIN = 0.002f;
-        private const float MAX_OBSTACLE_UPWARD_NORMAL = 0.7f;
         private const float STEP_HEIGHT = 0.3f;
-        private const float STEP_PROBE_INSET = 0.02f;
-        private const float MIN_STEP_RISE = 0.02f;
-        private const float STEP_PROBE_DEPTH_RATIO = 2f;
+        private const float LIP_HEIGHT = 0.03f;
+        private const float OBSTACLE_LIFT = 0.01f;
+        private const float OBSTACLE_MARGIN = 0.06f;
+        private const float TRAVEL_SAFETY = 2f;
+        private const float MAX_NODE_SPEED = 12f;
+        private const float MAX_GUIDE_PULL = 0.03f;
+        private const float MIN_PIVOT_DISTANCE = 1f;
+        private const float MAX_COUNTED_SEGMENT_STRETCH = 1.3f;
         private const float HALF = 0.5f;
         private const int MIN_GUIDE_POINTS = 2;
-        private const int STEPS_PER_HOLLOW_ESCAPE = 4;
+        private const float HOLLOW_ESCAPE_INTERVAL = 1f / 15f;
         private const float MIN_WRAP_PUSH = 0.001f;
 
         private readonly List<Vector3> _positions = new List<Vector3>();
         private readonly List<Vector3> _previousPositions = new List<Vector3>();
+        private readonly List<Vector3> _velocities = new List<Vector3>();
+        private readonly List<Vector3> _pushes = new List<Vector3>();
+        private readonly List<Vector3> _smoothedVelocities = new List<Vector3>();
         private readonly List<float> _groundHeights = new List<float>();
-        private readonly List<Vector3> _sweepStarts = new List<Vector3>();
         private readonly List<bool> _wrapsObstacle = new List<bool>();
+        private readonly List<bool> _isNearObstacle = new List<bool>();
         private readonly IRaycastService _raycastService;
         private readonly HoseRopeSettings _settings;
         private readonly float _segmentLength;
 
         private IReadOnlyList<Vector3> _guide;
-        private float _accumulatedTime;
-        private int _stepsSinceHollowEscape;
+        private float _timeSinceHollowEscape;
+        private bool _hasStartPin;
+        private bool _hasEndPin;
+        private HosePin _startPin;
+        private HosePin _endPin;
+        private HosePin _appliedStartPin;
+        private HosePin _appliedEndPin;
 
         public HoseRope(IRaycastService raycastService, HoseRopeSettings settings, float length)
             : this(raycastService, settings, length, length)
@@ -58,12 +68,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
             BendStiffness = settings.BendStiffness;
 
             for (int i = 0; i <= segmentCount; i++)
-            {
-                _positions.Add(Vector3.zero);
-                _previousPositions.Add(Vector3.zero);
-                _groundHeights.Add(float.MinValue);
-                _wrapsObstacle.Add(false);
-            }
+                AddNode(_positions.Count, Vector3.zero);
         }
 
         public IReadOnlyList<Vector3> Points => _positions;
@@ -93,18 +98,21 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         public float StretchRatio => Stretch / Length;
 
-        public bool IsTaut => CanPayOut == false && StretchRatio > _settings.LeashStretchRatio;
-
-        public Vector3 FindLeashPivot()
+        public float FeltStretchRatio
         {
-            for (int i = _positions.Count - 1 - PINNED_NODES_PER_END; i >= PINNED_NODES_PER_END; i--)
+            get
             {
-                if (_wrapsObstacle[i])
-                    return _positions[i];
-            }
+                float measured = 0f;
+                float maxCounted = _segmentLength * MAX_COUNTED_SEGMENT_STRETCH;
 
-            return Anchor;
+                for (int i = 0; i < _positions.Count - 1; i++)
+                    measured += Mathf.Min(Vector3.Distance(_positions[i], _positions[i + 1]), maxCounted);
+
+                return (measured - Length) / Length;
+            }
         }
+
+        public bool IsTaut => CanPayOut == false && StretchRatio > _settings.LeashStretchRatio;
 
         public float FreeLength => MaxLength - _segmentLength * (PINNED_NODES_PER_END * 2 - 1);
 
@@ -113,6 +121,19 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         public float CollisionRadius { get; set; }
 
         public float BendStiffness { get; set; }
+
+        public Vector3 FindLeashPivot()
+        {
+            Vector3 end = _positions[_positions.Count - 1];
+
+            for (int i = _positions.Count - 1 - PINNED_NODES_PER_END; i >= PINNED_NODES_PER_END; i--)
+            {
+                if (_wrapsObstacle[i] && (_positions[i] - end).ToGroundPlane().magnitude > MIN_PIVOT_DISTANCE)
+                    return _positions[i];
+            }
+
+            return Anchor;
+        }
 
         public void Lay(IReadOnlyList<Vector3> polyline, bool snapToGround = true)
         {
@@ -134,9 +155,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
                 Vector3 from = polyline[segment];
                 Vector3 direction = (polyline[segment + 1] - from).normalized;
                 Vector3 onPath = from + direction * (distance - segmentStart);
-                Vector3 position = snapToGround ? ProjectToGround(onPath) : onPath;
-                _positions[i] = position;
-                _previousPositions[i] = position;
+                _positions[i] = snapToGround ? ProjectToGround(onPath) : onPath;
+                _velocities[i] = Vector3.zero;
             }
         }
 
@@ -147,85 +167,273 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
             Vector3 anchor = _positions[PINNED_NODES_PER_END - 1];
             Vector3 position = Vector3.Lerp(anchor, _positions[PINNED_NODES_PER_END], PAY_OUT_INSERT_FRACTION);
-            _positions.Insert(PINNED_NODES_PER_END, position);
-            _previousPositions.Insert(PINNED_NODES_PER_END, position);
-            _groundHeights.Insert(PINNED_NODES_PER_END, float.MinValue);
-            _wrapsObstacle.Insert(PINNED_NODES_PER_END, false);
+            AddNode(PINNED_NODES_PER_END, position);
             return true;
         }
 
         public void Guide(IReadOnlyList<Vector3> path) =>
             _guide = path;
 
-        public void PinStart(Vector3 position, Vector3 direction) =>
-            Pin(0, 1, position, direction);
+        public void PinStart(Vector3 position, Vector3 direction)
+        {
+            _startPin = new HosePin(position, direction);
 
-        public void PinEnd(Vector3 position, Vector3 direction) =>
-            Pin(_positions.Count - 1, -1, position, direction);
+            if (_hasStartPin)
+                return;
+
+            _hasStartPin = true;
+            _appliedStartPin = _startPin;
+        }
+
+        public void PinEnd(Vector3 position, Vector3 direction)
+        {
+            _endPin = new HosePin(position, direction);
+
+            if (_hasEndPin)
+                return;
+
+            _hasEndPin = true;
+            _appliedEndPin = _endPin;
+        }
 
         public void Simulate(float deltaTime)
         {
-            _accumulatedTime = Mathf.Min(_accumulatedTime + deltaTime, FIXED_STEP * MAX_STEPS_PER_FRAME);
+            float stepTime = Mathf.Min(deltaTime, MAX_STEP_TIME);
 
-            while (_accumulatedTime >= FIXED_STEP)
-            {
-                Step(FIXED_STEP);
-                _accumulatedTime -= FIXED_STEP;
-            }
+            if (stepTime > 0f)
+                Step(stepTime);
+
+            _appliedStartPin = _startPin;
+            _appliedEndPin = _endPin;
+            ApplyPins(1f);
         }
 
         public Vector3 ProjectToGround(Vector3 position) =>
             TryFindGround(position, out float height) ? new Vector3(position.x, height + SurfaceOffset, position.z) : position;
 
-        private void Pin(int index, int step, Vector3 position, Vector3 direction)
+        private void AddNode(int index, Vector3 position)
         {
-            Vector3 next = position + direction.normalized * _segmentLength;
-            SetPinned(index, position);
-            SetPinned(index + step, next);
+            _positions.Insert(index, position);
+            _previousPositions.Insert(index, position);
+            _velocities.Insert(index, Vector3.zero);
+            _pushes.Insert(index, Vector3.zero);
+            _smoothedVelocities.Insert(index, Vector3.zero);
+            _groundHeights.Insert(index, float.MinValue);
+            _wrapsObstacle.Insert(index, false);
+            _isNearObstacle.Insert(index, false);
         }
 
-        private void SetPinned(int index, Vector3 position)
+        private void ApplyPins(float share)
         {
-            _positions[index] = position;
-            _previousPositions[index] = position;
+            SetPinned(0, 1, HosePin.Lerp(_appliedStartPin, _startPin, share));
+            SetPinned(_positions.Count - 1, -1, HosePin.Lerp(_appliedEndPin, _endPin, share));
+        }
+
+        private void SetPinned(int index, int step, HosePin pin)
+        {
+            _positions[index] = pin.Position;
+            _positions[index + step] = pin.Position + pin.Direction * _segmentLength;
+            _velocities[index] = Vector3.zero;
+            _velocities[index + step] = Vector3.zero;
         }
 
         private void Step(float deltaTime)
         {
-            CaptureSweepStarts();
+            int substeps = Mathf.Max(1, Mathf.CeilToInt(_settings.Substeps * deltaTime / REFERENCE_STEP));
+            float substepTime = deltaTime / substeps;
+            float stepRatio = deltaTime / REFERENCE_STEP;
+            float damping = Mathf.Pow(_settings.AirDamping, stepRatio / substeps);
+            float bendShare = GetSubstepShare(BendStiffness, substeps);
+            float radius = Mathf.Max(CollisionRadius, SurfaceOffset);
+
             ClearObstacleWraps();
-            Integrate(deltaTime);
-            PullTowardGuide();
+            PullTowardGuide(stepRatio);
             UpdateGroundHeights();
+            FindNodesNearObstacles(radius, deltaTime);
 
-            int lastIteration = _settings.ConstraintIterations - 1;
-            int iterationsPerCollision = Mathf.Max(1, _settings.ConstraintIterations / _settings.CollisionPasses);
-
-            for (int iteration = 0; iteration <= lastIteration; iteration++)
+            for (int substep = 0; substep < substeps; substep++)
             {
-                SolveLengths();
-                SolveBends();
+                ApplyPins((float)(substep + 1) / substeps);
+                Integrate(substepTime, damping);
+                SolveLengths(substep % 2 == 0);
+                SolveBends(bendShare);
                 SolveGround();
-
-                if ((iteration + 1) % iterationsPerCollision == 0 || iteration == lastIteration)
-                {
-                    SolveCollisions();
-                    CaptureSweepStarts();
-                }
+                SolveCollisions(radius);
+                UpdateVelocities(substepTime);
             }
 
-            _stepsSinceHollowEscape++;
-
-            if (_stepsSinceHollowEscape >= STEPS_PER_HOLLOW_ESCAPE)
-            {
-                _stepsSinceHollowEscape = 0;
-                EscapeHollowSolids();
-            }
-
-            ApplyGroundFriction();
+            SmoothVelocities();
+            ApplyGroundFriction(stepRatio);
+            EscapeHollowSolidsSometimes(radius, deltaTime);
         }
 
-        private void PullTowardGuide()
+        private void SmoothVelocities()
+        {
+            float share = _settings.VelocitySmoothing;
+
+            if (share <= 0f)
+                return;
+
+            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+                _smoothedVelocities[i] = Vector3.Lerp(_velocities[i], (_velocities[i - 1] + _velocities[i + 1]) * HALF, share);
+
+            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+                _velocities[i] = _smoothedVelocities[i];
+        }
+
+        private void Integrate(float deltaTime, float damping)
+        {
+            Vector3 gravityStep = Physics.gravity * deltaTime;
+
+            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+            {
+                _previousPositions[i] = _positions[i];
+                _velocities[i] = (_velocities[i] + gravityStep) * damping;
+                _positions[i] += _velocities[i] * deltaTime;
+            }
+        }
+
+        private void UpdateVelocities(float deltaTime)
+        {
+            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+            {
+                Vector3 velocity = (_positions[i] - _previousPositions[i]) / deltaTime;
+                Vector3 push = _pushes[i];
+
+                if (push.sqrMagnitude > 0f)
+                {
+                    Vector3 normal = push.normalized;
+                    velocity -= normal * Mathf.Min(Vector3.Dot(velocity, normal), 0f);
+                    _pushes[i] = Vector3.zero;
+                }
+
+                _velocities[i] = Vector3.ClampMagnitude(velocity, MAX_NODE_SPEED);
+            }
+        }
+
+        private void Push(int index, Vector3 offset)
+        {
+            if (GetInverseMass(index) <= 0f)
+                return;
+
+            _positions[index] += offset;
+            _previousPositions[index] += offset;
+            _pushes[index] += offset;
+        }
+
+        private void SolveLengths(bool isForward)
+        {
+            int last = _positions.Count - 2;
+
+            for (int k = 0; k <= last; k++)
+            {
+                int i = isForward ? k : last - k;
+                SolveDistance(i, i + 1, _segmentLength, 1f);
+            }
+        }
+
+        private void SolveBends(float share)
+        {
+            float restDistance = _segmentLength * BEND_SPAN;
+
+            for (int i = 0; i < _positions.Count - BEND_SPAN; i++)
+            {
+                if (Vector3.Distance(_positions[i], _positions[i + BEND_SPAN]) < restDistance)
+                    SolveDistance(i, i + BEND_SPAN, restDistance, share);
+            }
+        }
+
+        private void SolveDistance(int first, int second, float restDistance, float share)
+        {
+            float firstWeight = GetInverseMass(first);
+            float secondWeight = GetInverseMass(second);
+            float totalWeight = firstWeight + secondWeight;
+
+            if (totalWeight <= 0f)
+                return;
+
+            Vector3 delta = _positions[second] - _positions[first];
+            float distance = delta.magnitude;
+
+            if (distance < MIN_DISTANCE)
+                return;
+
+            Vector3 correction = delta * ((distance - restDistance) / distance * share / totalWeight);
+            _positions[first] += correction * firstWeight;
+            _positions[second] -= correction * secondWeight;
+        }
+
+        private void SolveGround()
+        {
+            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+            {
+                Vector3 position = _positions[i];
+                float restingHeight = _groundHeights[i] + SurfaceOffset;
+
+                if (position.y < restingHeight)
+                    Push(i, Vector3.up * (restingHeight - position.y));
+            }
+        }
+
+        private void SolveCollisions(float radius)
+        {
+            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+            {
+                if (_isNearObstacle[i] == false)
+                    continue;
+
+                if (_raycastService.TryPushOutSphere(_positions[i], radius, _settings.CollisionMask, GetStepHeight(i), out Vector3 freePosition) == false)
+                    continue;
+
+                MarkWrapIfPushedSideways(i, freePosition - _positions[i]);
+                Push(i, freePosition - _positions[i]);
+            }
+
+            SolveSegmentCollisions(radius);
+        }
+
+        private void SolveSegmentCollisions(float radius)
+        {
+            for (int i = PINNED_NODES_PER_END - 1; i < _positions.Count - PINNED_NODES_PER_END; i++)
+            {
+                int next = i + 1;
+
+                if (_isNearObstacle[i] == false && _isNearObstacle[next] == false)
+                    continue;
+
+                float firstWeight = GetInverseMass(i);
+                float secondWeight = GetInverseMass(next);
+                float totalWeight = firstWeight + secondWeight;
+
+                if (totalWeight <= 0f)
+                    continue;
+
+                Vector3 middle = (_positions[i] + _positions[next]) * HALF;
+                float stepHeight = Mathf.Min(GetStepHeight(i), GetStepHeight(next));
+
+                if (_raycastService.TryPushOutSphere(middle, radius, _settings.CollisionMask, stepHeight, out Vector3 freeMiddle) == false)
+                    continue;
+
+                Vector3 push = (freeMiddle - middle) / (totalWeight * HALF);
+                Push(i, push * firstWeight);
+                Push(next, push * secondWeight);
+                MarkWrapIfPushedSideways(i, push);
+                MarkWrapIfPushedSideways(next, push);
+            }
+        }
+
+        private void FindNodesNearObstacles(float radius, float deltaTime)
+        {
+            for (int i = 0; i < _positions.Count; i++)
+            {
+                float probeRadius = radius + OBSTACLE_MARGIN + _velocities[i].magnitude * deltaTime * TRAVEL_SAFETY;
+                Vector3 center = _positions[i];
+                center.y = Mathf.Max(center.y, _groundHeights[i] + probeRadius + OBSTACLE_LIFT);
+                _isNearObstacle[i] = _raycastService.IsAnyColliderNear(center, probeRadius, _settings.CollisionMask);
+            }
+        }
+
+        private void PullTowardGuide(float stepRatio)
         {
             if (_guide == null || _guide.Count < MIN_GUIDE_POINTS)
                 return;
@@ -251,74 +459,46 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
                 float along = (nodeDistance - pathDistance) / Mathf.Max(pathSegment, MIN_DISTANCE);
                 Vector3 target = Vector3.Lerp(_guide[pathIndex], _guide[pathIndex - 1], along);
-                Vector3 pull = ((target - _positions[i]) * _settings.TrailPull).WithoutHeight();
-                _positions[i] += pull;
-                _previousPositions[i] += pull;
+                Vector3 pull = ((target - _positions[i]) * (_settings.TrailPull * stepRatio)).WithoutHeight();
+                _positions[i] += Vector3.ClampMagnitude(pull, MAX_GUIDE_PULL * stepRatio);
             }
         }
 
-        private void EscapeHollowSolids()
+        private void ApplyGroundFriction(float stepRatio)
         {
-            float radius = Mathf.Max(CollisionRadius, SurfaceOffset);
+            float kept = Mathf.Pow(1f - _settings.GroundFriction, stepRatio);
 
             for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
             {
+                if (IsOnGround(i) == false)
+                    continue;
+
+                Vector3 velocity = _velocities[i];
+                bool isResting = velocity.ToGroundPlane().sqrMagnitude < _settings.StaticFrictionSpeed * _settings.StaticFrictionSpeed;
+                float planarShare = isResting ? 0f : kept;
+                _velocities[i] = new Vector3(velocity.x * planarShare, velocity.y, velocity.z * planarShare);
+            }
+        }
+
+        private void EscapeHollowSolidsSometimes(float radius, float deltaTime)
+        {
+            _timeSinceHollowEscape += deltaTime;
+
+            if (_timeSinceHollowEscape < HOLLOW_ESCAPE_INTERVAL)
+                return;
+
+            _timeSinceHollowEscape = 0f;
+
+            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+            {
+                if (_isNearObstacle[i] == false)
+                    continue;
+
                 if (_raycastService.TryEscapeHollow(_positions[i], radius, _settings.HollowEscapeDistance, _settings.CollisionMask, out Vector3 freePosition) == false)
                     continue;
 
                 _positions[i] = freePosition;
-                _previousPositions[i] = freePosition;
-            }
-        }
-
-        private void CaptureSweepStarts()
-        {
-            _sweepStarts.Clear();
-            _sweepStarts.AddRange(_positions);
-        }
-
-        private void SolveCollisions()
-        {
-            float radius = Mathf.Max(CollisionRadius, SurfaceOffset);
-
-            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
-            {
-                float stepHeight = IsOnGround(i) ? STEP_HEIGHT : 0f;
-                Vector3 position = Sweep(_sweepStarts[i], _positions[i], radius, stepHeight);
-
-                if (_raycastService.TryPushOutSphere(position, radius, _settings.CollisionMask, stepHeight, out Vector3 freePosition))
-                    position = freePosition;
-
-                MarkWrapIfPushedSideways(i, position - _positions[i]);
-                _positions[i] = position;
-            }
-
-            SolveSegmentCollisions(radius);
-        }
-
-        private void SolveSegmentCollisions(float radius)
-        {
-            for (int i = PINNED_NODES_PER_END - 1; i < _positions.Count - PINNED_NODES_PER_END; i++)
-            {
-                int next = i + 1;
-                float firstWeight = GetInverseMass(i);
-                float secondWeight = GetInverseMass(next);
-                float totalWeight = firstWeight + secondWeight;
-
-                if (totalWeight <= 0f)
-                    continue;
-
-                Vector3 middle = (_positions[i] + _positions[next]) * HALF;
-                float stepHeight = IsOnGround(i) && IsOnGround(next) ? STEP_HEIGHT : 0f;
-
-                if (_raycastService.TryPushOutSphere(middle, radius, _settings.CollisionMask, stepHeight, out Vector3 freeMiddle) == false)
-                    continue;
-
-                Vector3 push = (freeMiddle - middle) / (totalWeight * HALF);
-                _positions[i] += push * firstWeight;
-                _positions[next] += push * secondWeight;
-                MarkWrapIfPushedSideways(i, push);
-                MarkWrapIfPushedSideways(next, push);
+                _velocities[i] = Vector3.zero;
             }
         }
 
@@ -334,147 +514,23 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
                 _wrapsObstacle[index] = true;
         }
 
-        private bool IsOnGround(int index) =>
-            _positions[index].y <= _groundHeights[index] + SurfaceOffset + _settings.GroundContactTolerance;
-
-        private Vector3 Sweep(Vector3 from, Vector3 to, float radius, float stepHeight)
-        {
-            Vector3 delta = to - from;
-            float distance = delta.magnitude;
-
-            if (distance <= radius * SWEEP_MIN_MOVE_RATIO)
-                return to;
-
-            Vector3 direction = delta / distance;
-            Ray ray = new Ray(from, direction);
-
-            if (TryHitObstacle(ray, radius, distance, stepHeight, out RaycastHit hit) == false)
-                return to;
-
-            Vector3 contact = from + direction * Mathf.Max(hit.distance - SWEEP_SKIN, 0f);
-            Vector3 slide = Vector3.ProjectOnPlane(to - contact, hit.normal);
-            float slideDistance = slide.magnitude;
-
-            if (slideDistance <= radius * SWEEP_MIN_MOVE_RATIO)
-                return contact;
-
-            Vector3 slideDirection = slide / slideDistance;
-            Ray slideRay = new Ray(contact, slideDirection);
-
-            return TryHitObstacle(slideRay, radius, slideDistance, stepHeight, out RaycastHit slideHit)
-                ? contact + slideDirection * Mathf.Max(slideHit.distance - SWEEP_SKIN, 0f)
-                : contact + slide;
-        }
-
-        private bool TryHitObstacle(Ray ray, float radius, float distance, float stepHeight, out RaycastHit hit)
-        {
-            if (_raycastService.TrySphereCast(ray, radius, distance, _settings.CollisionMask, out hit) == false)
-                return false;
-
-            if (hit.normal.y > MAX_OBSTACLE_UPWARD_NORMAL)
-                return ray.GetPoint(distance).y < hit.point.y;
-
-            return IsStep(hit, ray.origin.y, radius, stepHeight) == false;
-        }
-
-        private static bool IsStep(RaycastHit hit, float height, float radius, float stepHeight)
-        {
-            if (stepHeight <= 0f)
-                return false;
-
-            Vector3 above = new Vector3(hit.point.x, height + stepHeight, hit.point.z) - hit.normal * STEP_PROBE_INSET;
-            Ray down = new Ray(above, Vector3.down);
-            return hit.collider.Raycast(down, out RaycastHit top, stepHeight * STEP_PROBE_DEPTH_RATIO)
-                && top.normal.y > MAX_OBSTACLE_UPWARD_NORMAL
-                && top.point.y > height - radius + MIN_STEP_RISE;
-        }
-
-        private void Integrate(float deltaTime)
-        {
-            Vector3 gravityStep = Physics.gravity * (deltaTime * deltaTime);
-
-            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
-            {
-                Vector3 position = _positions[i];
-                Vector3 velocity = (position - _previousPositions[i]) * _settings.AirDamping;
-                _previousPositions[i] = position;
-                _positions[i] = position + velocity + gravityStep;
-            }
-        }
-
         private void UpdateGroundHeights()
         {
-            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
+            for (int i = 0; i < _positions.Count; i++)
                 _groundHeights[i] = TryFindGround(_positions[i], out float height) ? height : float.MinValue;
         }
 
-        private void SolveLengths()
-        {
-            for (int i = 0; i < _positions.Count - 1; i++)
-                SolveDistance(i, i + 1, _segmentLength, 1f);
-        }
+        private bool IsOnGround(int index) =>
+            _positions[index].y <= _groundHeights[index] + SurfaceOffset + _settings.GroundContactTolerance;
 
-        private void SolveBends()
-        {
-            float restDistance = _segmentLength * BEND_SPAN;
-
-            for (int i = 0; i < _positions.Count - BEND_SPAN; i++)
-            {
-                if (Vector3.Distance(_positions[i], _positions[i + BEND_SPAN]) < restDistance)
-                    SolveDistance(i, i + BEND_SPAN, restDistance, BendStiffness);
-            }
-        }
-
-        private void SolveDistance(int first, int second, float restDistance, float stiffness)
-        {
-            float firstWeight = GetInverseMass(first);
-            float secondWeight = GetInverseMass(second);
-            float totalWeight = firstWeight + secondWeight;
-
-            if (totalWeight <= 0f)
-                return;
-
-            Vector3 delta = _positions[second] - _positions[first];
-            float distance = delta.magnitude;
-
-            if (distance < MIN_DISTANCE)
-                return;
-
-            Vector3 correction = delta * ((distance - restDistance) / distance * stiffness / totalWeight);
-            _positions[first] += correction * firstWeight;
-            _positions[second] -= correction * secondWeight;
-        }
-
-        private void SolveGround()
-        {
-            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
-            {
-                Vector3 position = _positions[i];
-
-                float restingHeight = _groundHeights[i] + SurfaceOffset;
-
-                if (position.y < restingHeight)
-                    _positions[i] = new Vector3(position.x, restingHeight, position.z);
-            }
-        }
-
-        private void ApplyGroundFriction()
-        {
-            for (int i = PINNED_NODES_PER_END; i < _positions.Count - PINNED_NODES_PER_END; i++)
-            {
-                Vector3 position = _positions[i];
-
-                if (position.y > _groundHeights[i] + SurfaceOffset + _settings.GroundContactTolerance)
-                    continue;
-
-                Vector3 previous = _previousPositions[i];
-                Vector3 slowed = Vector3.Lerp(previous, position, _settings.GroundFriction);
-                _previousPositions[i] = new Vector3(slowed.x, previous.y, slowed.z);
-            }
-        }
+        private float GetStepHeight(int index) =>
+            IsOnGround(index) ? STEP_HEIGHT : LIP_HEIGHT;
 
         private float GetInverseMass(int index) =>
             index < PINNED_NODES_PER_END || index >= _positions.Count - PINNED_NODES_PER_END ? 0f : 1f;
+
+        private static float GetSubstepShare(float stiffness, int substeps) =>
+            stiffness >= 1f ? 1f : 1f - Mathf.Pow(1f - stiffness, 1f / substeps);
 
         private bool TryFindGround(Vector3 position, out float height)
         {
@@ -498,5 +554,6 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
                 ? Mathf.Max(ceiling.distance - CEILING_GAP, 0f)
                 : GROUND_PROBE_HEIGHT;
         }
+
     }
 }

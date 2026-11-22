@@ -10,7 +10,7 @@ using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 {
-    public class HoseNozzle : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IAimable, IFirstPersonHeld, ITriggerable, IAdjustable, IRecoiling
+    public class HoseNozzle : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IAimable, IFirstPersonHeld, ITriggerable, IAdjustable, IRecoiling, ITethered
     {
         private const float GROUND_PROBE_HEIGHT = 0.5f;
         private const float GROUND_PROBE_DISTANCE = 5f;
@@ -35,7 +35,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         private IRaycastService _raycastService;
         private Transform _restParent;
         private GrabAnchor _anchor;
-        private IMovementConstraint _leash;
+        private HoseLeash _leash;
         private Quaternion _aimRotation = Quaternion.identity;
         private Vector3 _aimDirection;
         private int _visibleLayer;
@@ -74,6 +74,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         public float PressureSetting { get; private set; }
 
         public Vector3 RecoilForce => IsHeld ? -_tip.forward * _reaction : Vector3.zero;
+
+        public Vector3 TetherPull => _leash != null && IsHeld ? _leash.Pull : Vector3.zero;
 
         public bool CanInteract => _grabber.IsHolding() == false;
 
@@ -140,7 +142,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
             transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         }
 
-        public void SetLeash(IMovementConstraint leash) =>
+        public void SetLeash(HoseLeash leash) =>
             _leash = leash;
 
         public Vector3 Constrain(Vector3 currentPosition, Vector3 desiredPosition) =>

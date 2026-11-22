@@ -8,7 +8,7 @@ using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses
 {
-    public class HoseCoupling : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IFirstPersonHeld
+    public class HoseCoupling : MonoBehaviour, IInteractable, IGrabbable, IHandGrips, IMovementConstraint, IFirstPersonHeld, ITethered
     {
         private const float GROUND_PROBE_HEIGHT = 0.5f;
         private const float GROUND_PROBE_DISTANCE = 5f;
@@ -44,7 +44,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private IRaycastService _raycastService;
         private Transform _restParent;
         private GrabAnchor _anchor;
-        private IMovementConstraint _leash;
+        private HoseLeash _leash;
         private HoseSocket _socket;
         private int _visibleLayer;
         private string _holder;
@@ -72,6 +72,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         public Vector3 CarrierPosition => IsHeld ? _anchor.CarrierPosition : transform.position;
 
         public bool IsAttached => _socket != null;
+
+        public Vector3 TetherPull => _leash != null && IsHeld ? _leash.Pull : Vector3.zero;
 
         public bool CanInteract => _grabber.IsHolding() == false;
 
@@ -138,7 +140,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         public void PlaceAt(Vector3 groundPosition, Quaternion rotation) =>
             transform.SetPositionAndRotation(groundPosition + Vector3.up * _restHeight, Quaternion.Euler(0f, rotation.eulerAngles.y, 0f));
 
-        public void SetLeash(IMovementConstraint leash) =>
+        public void SetLeash(HoseLeash leash) =>
             _leash = leash;
 
         public Vector3 Constrain(Vector3 currentPosition, Vector3 desiredPosition) =>

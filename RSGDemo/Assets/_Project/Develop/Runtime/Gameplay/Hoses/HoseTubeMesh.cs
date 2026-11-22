@@ -8,6 +8,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
     {
         private const float MIN_SEGMENT_LENGTH = 0.0001f;
         private const float MIN_NORMAL_SQR_MAGNITUDE = 0.000001f;
+        private const float RIB_SHARPNESS = 2f;
+        private const float HALF = 0.5f;
 
         private readonly List<Vector3> _centers = new List<Vector3>();
         private readonly List<float> _distances = new List<float>();
@@ -22,6 +24,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private readonly int _subdivisions;
         private readonly Vector2 _paletteUv;
         private readonly float _endTaperLength;
+
+        private float _ribSpacing;
+        private float _ribDepth;
 
         public HoseTubeMesh(float inflatedRadius, float deflatedRadius, float deflatedSquash, int sides, int subdivisions, Vector2 paletteUv, float endTaperLength)
         {
@@ -38,6 +43,12 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         }
 
         public Mesh Mesh { get; }
+
+        public void SetRibs(float spacing, float depth)
+        {
+            _ribSpacing = spacing;
+            _ribDepth = depth;
+        }
 
         public void Build(IReadOnlyList<Vector3> points, Func<float, float> inflationAt)
         {
@@ -116,13 +127,13 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
                 Vector3 side = Vector3.Cross(normal, tangent);
                 float inflation = length > 0f ? inflationAt(_distances[i] / length) * GetEndTaper(_distances[i], length) : 0f;
-                AddRing(_centers[i], side, normal, inflation);
+                AddRing(_centers[i], side, normal, inflation, GetRibScale(length - _distances[i]));
             }
         }
 
-        private void AddRing(Vector3 center, Vector3 side, Vector3 normal, float inflation)
+        private void AddRing(Vector3 center, Vector3 side, Vector3 normal, float inflation, float ribScale)
         {
-            float halfWidth = Mathf.LerpUnclamped(_deflatedRadius, _inflatedRadius, inflation);
+            float halfWidth = Mathf.LerpUnclamped(_deflatedRadius, _inflatedRadius, inflation) * ribScale;
             float halfHeight = halfWidth * Mathf.LerpUnclamped(_deflatedSquash, 1f, Mathf.Clamp01(inflation));
 
             for (int j = 0; j < _sides; j++)
@@ -135,6 +146,15 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
                 _normals.Add((side * (cos / halfWidth) + normal * (sin / halfHeight)).normalized);
                 _uvs.Add(_paletteUv);
             }
+        }
+
+        private float GetRibScale(float distanceFromEnd)
+        {
+            if (_ribDepth <= 0f || _ribSpacing <= 0f)
+                return 1f;
+
+            float wave = HALF * (1f + Mathf.Cos(distanceFromEnd / _ribSpacing * Mathf.PI * 2f));
+            return 1f + _ribDepth * Mathf.Pow(wave, RIB_SHARPNESS);
         }
 
         private float GetEndTaper(float distance, float length)

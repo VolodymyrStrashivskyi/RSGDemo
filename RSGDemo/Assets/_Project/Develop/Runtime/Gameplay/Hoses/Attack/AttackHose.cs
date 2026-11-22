@@ -15,11 +15,14 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         [SerializeField] private HoseView _view;
         [SerializeField] private HoseNozzle _nozzle;
 
+        private readonly List<Vector3> _shownPoints = new List<Vector3>();
+
         private AttackHoseConfig _config;
         private IRaycastService _raycastService;
         private HoseReel _reel;
         private HoseRope _rope;
         private HoseTrail _trail;
+        private HoseTension _tension;
         private float _payOutBudget;
 
         [Inject]
@@ -45,7 +48,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
             _reel.Initialize(_config, _rope.MaxLength - _rope.Length);
             _rope.Lay(BuildParkedPath(), false);
 
-            _nozzle.SetLeash(new HoseLeash(_rope, _config.LeashSlack));
+            _tension = new HoseTension(_rope, _config.Tension, _config.Rope, _raycastService);
+            _tension.ReachedFullLength += OnReachedFullLength;
+            _nozzle.SetLeash(new HoseLeash(_rope, _tension, _config.LeashSlack));
             _view.Initialize(CreateTube(), CreateTube(), _config.InflationWaveWidth, _config.InflationBulge);
         }
 
@@ -60,8 +65,26 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
             _trail.Follow(_rope, _nozzle.IsHeld, _nozzle.transform.position);
             _rope.Simulate(Time.deltaTime);
             PayOut();
-            _view.Render(_rope.Points, GetFirstPersonHoseEnd());
+            UpdateTension();
+            _view.Render(_shownPoints, GetFirstPersonHoseEnd());
         }
+
+        private void OnDestroy()
+        {
+            if (_tension != null)
+                _tension.ReachedFullLength -= OnReachedFullLength;
+        }
+
+        private void UpdateTension()
+        {
+            _tension.Update(_nozzle.IsHeld, _nozzle.transform.position, Time.deltaTime);
+            _rope.BendStiffness = _tension.GetBendStiffness(_config.Rope.BendStiffness);
+            _tension.PushProps(Time.deltaTime);
+            _tension.Tremble(_rope.Points, _shownPoints);
+        }
+
+        private void OnReachedFullLength() =>
+            _reel.Brake();
 
         private void PayOut()
         {
@@ -94,8 +117,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         private Transform GetFirstPersonHoseEnd() =>
             _nozzle.ViewModel.IsShown ? _nozzle.ViewModel.HoseEnd : null;
 
-        private HoseTubeMesh CreateTube() =>
-            new HoseTubeMesh(
+        private HoseTubeMesh CreateTube()
+        {
+            HoseTubeMesh tube = new HoseTubeMesh(
                 _config.Radius,
                 _config.Radius * _config.DeflatedRadiusRatio,
                 _config.DeflatedSquash,
@@ -103,6 +127,10 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
                 _config.Subdivisions,
                 _config.PaletteUv,
                 _config.EndTaperLength);
+
+            tube.SetRibs(_config.RibSpacing, _config.RibDepth);
+            return tube;
+        }
 
         private float GetDeflatedHalfHeight() =>
             _config.Radius * _config.DeflatedRadiusRatio * _config.DeflatedSquash;

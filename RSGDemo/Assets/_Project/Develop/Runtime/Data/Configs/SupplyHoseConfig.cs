@@ -10,6 +10,7 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField, Min(0f), Tooltip("Extra distance between the taut hose and the player: hands are in front of the body")]
         public float LeashSlack { get; private set; } = 0f;
         [field: SerializeField] public HoseRopeSettings Rope { get; private set; } = new HoseRopeSettings();
+        [field: SerializeField] public HoseTensionSettings Tension { get; private set; } = new HoseTensionSettings();
 
         [field: Header("Look")]
         [field: SerializeField, Min(0.01f), Tooltip("Hose radius under pressure, m")]
@@ -22,9 +23,13 @@ namespace _Project.Develop.Runtime.Data.Configs
         public float InflationBulge { get; private set; } = 0.25f;
         [field: SerializeField, Min(0f), Tooltip("Length from each end over which the hose narrows to empty size to fit the coupling, m")]
         public float EndTaperLength { get; private set; } = 0.3f;
-        [field: SerializeField, Range(3, 24)] public int Sides { get; private set; } = 10;
+        [field: SerializeField, Range(3, 24)] public int Sides { get; private set; } = 14;
         [field: SerializeField, Range(1, 8), Tooltip("Number of smoothing rings between rope nodes")]
-        public int Subdivisions { get; private set; } = 2;
+        public int Subdivisions { get; private set; } = 4;
+        [field: SerializeField, Min(0.05f), Tooltip("Distance between the woven bands along the hose, m")]
+        public float RibSpacing { get; private set; } = 0.3f;
+        [field: SerializeField, Range(0f, 0.3f), Tooltip("How far the woven bands stand out, as a share of the hose radius")]
+        public float RibDepth { get; private set; } = 0.06f;
         [field: SerializeField, Tooltip("UV of the color cell in Palette.png")]
         public Vector2 PaletteUv { get; private set; } = new Vector2(0.5f, 0.5f);
 

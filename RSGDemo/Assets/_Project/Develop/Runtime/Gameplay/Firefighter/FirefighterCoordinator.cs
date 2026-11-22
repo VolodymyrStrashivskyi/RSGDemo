@@ -104,6 +104,7 @@ namespace _Project.Develop.Runtime.Gameplay.Firefighter
             Vector3 force = _grabber.Held is IRecoiling recoiling ? recoiling.RecoilForce : Vector3.zero;
             _body.SetRecoilForce(force);
             _camera.SetRecoilForce(force.magnitude);
+            _camera.SetTether(_grabber.Held is ITethered tethered ? tethered.TetherPull : Vector3.zero);
         }
 
         private void OnGrabbed(IGrabbable item)

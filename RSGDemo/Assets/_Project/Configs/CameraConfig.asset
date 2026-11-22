@@ -16,3 +16,17 @@ MonoBehaviour:
   <MinPitch>k__BackingField: -80
   <MaxPitch>k__BackingField: 80
   <FieldOfView>k__BackingField: 70
+  <RecoilClimbPerKilonewton>k__BackingField: 8
+  <RecoilStiffness>k__BackingField: 120
+  <RecoilDamping>k__BackingField: 10
+  <RecoilShakePerKilonewton>k__BackingField: 1.2
+  <RecoilShakeFrequency>k__BackingField: 9
+  <HeldKickPerKilonewton>k__BackingField: 0.08
+  <HeldTiltRatio>k__BackingField: 1
+  <HeldShakePerKilonewton>k__BackingField: 0.012
+  <TugYawDegrees>k__BackingField: 2
+  <TugPitchDegrees>k__BackingField: 2.5
+  <TugStiffness>k__BackingField: 140
+  <TugDamping>k__BackingField: 9
+  <TugShakeDegrees>k__BackingField: 0.2
+  <HeldTugDistance>k__BackingField: 0.07

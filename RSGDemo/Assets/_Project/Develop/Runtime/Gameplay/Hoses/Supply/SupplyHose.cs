@@ -14,12 +14,15 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
         [SerializeField] private HoseView _view;
         [SerializeField] private HoseCoupling _coupling;
 
+        private readonly List<Vector3> _shownPoints = new List<Vector3>();
+
         private SupplyHoseConfig _config;
         private SupplyLine _supplyLine;
         private IRaycastService _raycastService;
         private Transform _intakePoint;
         private HoseRope _rope;
         private HoseTrail _trail;
+        private HoseTension _tension;
 
         [Inject]
         public void Construct(SupplyHoseConfig config, SupplyLine supplyLine, IRaycastService raycastService)
@@ -38,7 +41,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
             _trail = new HoseTrail(_raycastService, _config.Rope);
             LayOut(layPoint);
 
-            _coupling.SetLeash(new HoseLeash(_rope, _config.LeashSlack));
+            _tension = new HoseTension(_rope, _config.Tension, _config.Rope, _raycastService);
+            _coupling.SetLeash(new HoseLeash(_rope, _tension, _config.LeashSlack));
             _view.Initialize(CreateTube(), CreateTube(), _config.InflationWaveWidth, _config.InflationBulge);
 
             _coupling.Attached += OnAttached;
@@ -57,7 +61,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
             ApplyInflationToRope();
             _trail.Follow(_rope, _coupling.IsHeld, _coupling.transform.position);
             _rope.Simulate(Time.deltaTime);
-            _view.Render(_rope.Points, GetFirstPersonHoseEnd());
+            UpdateTension();
+            _view.Render(_shownPoints, GetFirstPersonHoseEnd());
         }
 
         private void OnDestroy()
@@ -87,8 +92,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
         private Transform GetFirstPersonHoseEnd() =>
             _coupling.ViewModel.IsShown ? _coupling.ViewModel.HoseEnd : null;
 
-        private HoseTubeMesh CreateTube() =>
-            new HoseTubeMesh(
+        private HoseTubeMesh CreateTube()
+        {
+            HoseTubeMesh tube = new HoseTubeMesh(
                 _config.Radius,
                 _config.Radius * _config.DeflatedRadiusRatio,
                 _config.DeflatedSquash,
@@ -97,6 +103,10 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
                 _config.PaletteUv,
                 _config.EndTaperLength);
 
+            tube.SetRibs(_config.RibSpacing, _config.RibDepth);
+            return tube;
+        }
+
         private float GetDeflatedHalfHeight() =>
             _config.Radius * _config.DeflatedRadiusRatio * _config.DeflatedSquash;
 
@@ -104,7 +114,15 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
         {
             float inflation = _view.InflationFront;
             _rope.SurfaceOffset = Mathf.Lerp(GetDeflatedHalfHeight(), _config.Radius, inflation);
-            _rope.BendStiffness = Mathf.Lerp(_config.Rope.BendStiffness, _config.Rope.InflatedBendStiffness, inflation);
+            float slackStiffness = Mathf.Lerp(_config.Rope.BendStiffness, _config.Rope.InflatedBendStiffness, inflation);
+            _rope.BendStiffness = _tension.GetBendStiffness(slackStiffness);
+        }
+
+        private void UpdateTension()
+        {
+            _tension.Update(_coupling.IsHeld, _coupling.transform.position, Time.deltaTime);
+            _tension.PushProps(Time.deltaTime);
+            _tension.Tremble(_rope.Points, _shownPoints);
         }
 
         private void OnAttached(HoseSocket socket, string initiator) =>

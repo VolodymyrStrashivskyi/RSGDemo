@@ -10,12 +10,16 @@ namespace _Project.Develop.Runtime.Data.Configs
 
         [field: SerializeField, Min(0.05f), Tooltip("Length of one physics rope segment, m")]
         public float SegmentLength { get; private set; } = 0.25f;
-        [field: SerializeField, Range(1, 50), Tooltip("How many times length constraints are solved per step")]
-        public int ConstraintIterations { get; private set; } = 24;
+        [field: SerializeField, Range(4, 40), Tooltip("Small physics steps per 1/60 s: each moves the hose a few millimetres, so it stays inextensible and cannot slip through thin obstacles")]
+        public int Substeps { get; private set; } = 16;
+        [field: SerializeField, Range(0f, 1f), Tooltip("How much each node's velocity is blended toward its neighbours' every frame: damps zigzag shaking of a taut hose")]
+        public float VelocitySmoothing { get; private set; } = 0.35f;
         [field: SerializeField, Range(0f, 1f), Tooltip("Fraction of velocity kept per step in the air")]
         public float AirDamping { get; private set; } = 0.98f;
         [field: SerializeField, Range(0f, 1f), Tooltip("Fraction of horizontal velocity removed by ground friction per step")]
         public float GroundFriction { get; private set; } = 0.6f;
+        [field: SerializeField, Min(0f), Tooltip("A node on the ground creeping slower than this stops completely: the resting hose lies still, m/s")]
+        public float StaticFrictionSpeed { get; private set; } = 0.25f;
         [field: SerializeField, Range(0f, 1f), Tooltip("How strongly the empty hose resists sharp bends")]
         public float BendStiffness { get; private set; } = 0.15f;
         [field: SerializeField, Range(0f, 1f), Tooltip("How strongly the pressurized hose resists bends: an inflated hose is springy and lies in wide arcs")]
@@ -25,8 +29,6 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField] public LayerMask GroundMask { get; private set; } = 1;
         [field: SerializeField, Tooltip("Walls, doors, furniture, movable props and vehicles the hose bends around instead of passing through")]
         public LayerMask CollisionMask { get; private set; } = DEFAULT_COLLISION_MASK;
-        [field: SerializeField, Range(1, 8), Tooltip("How many times per step the hose is pushed out of obstacles")]
-        public int CollisionPasses { get; private set; } = 2;
         [field: SerializeField, Min(0.05f), Tooltip("Distance between recorded points of the path the player walked with the hose, m")]
         public float TrailSpacing { get; private set; } = 0.3f;
         [field: SerializeField, Range(0f, 1f), Tooltip("How strongly the carried hose is pulled sideways onto the path the player walked, per step")]

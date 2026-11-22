@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using _Project.Develop.Runtime.Common.Raycast;
 using PrimeTween;
 using UnityEngine;
+using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses
 {
@@ -10,6 +12,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
     {
         private const float BELL_PEAK_SCALE = 4f;
         private const int END_NODES = 2;
+        private const int DEFAULT_OBSTACLE_MASK = 1281;
+        private const float MIN_BEND_DISTANCE = 0.0001f;
 
         [SerializeField] private MeshFilter _meshFilter;
         [SerializeField] private Renderer _renderer;
@@ -20,9 +24,14 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private int _firstPersonHiddenLayer;
         [SerializeField, Min(0.1f), Tooltip("Length of hose near the held end bent over to reach the view model, m")]
         private float _firstPersonBlendLength = 1.5f;
+        [SerializeField, Tooltip("Obstacles the bent first-person copy must not pass through")]
+        private LayerMask _firstPersonObstacleMask = DEFAULT_OBSTACLE_MASK;
+        [SerializeField, Min(0f), Tooltip("Gap the bent first-person copy keeps from obstacles, m")]
+        private float _firstPersonClearance = 0.05f;
         [SerializeField] private Ease _inflationEase = Ease.InOutSine;
 
         private readonly List<Vector3> _firstPersonPoints = new List<Vector3>();
+        private IRaycastService _raycastService;
         private HoseTubeMesh _tube;
         private HoseTubeMesh _firstPersonTube;
         private Func<float, float> _inflationAt;
@@ -31,6 +40,10 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private float _inflationFront;
         private int _visibleLayer;
         private Tween _tween;
+
+        [Inject]
+        public void Construct(IRaycastService raycastService) =>
+            _raycastService = raycastService;
 
         public float InflationFront => _inflationFront;
 
@@ -97,13 +110,28 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
                 if (weight <= 0f)
                     break;
 
-                _firstPersonPoints[i] += offset * weight;
+                _firstPersonPoints[i] = BendAroundObstacles(points[i], offset * weight);
             }
 
             int tipIndex = lastIndex - END_NODES + 1;
             float tipLength = Vector3.Distance(points[tipIndex], points[lastIndex]);
             _firstPersonPoints[tipIndex] = end.position + end.forward * tipLength;
             return _firstPersonPoints;
+        }
+
+        private Vector3 BendAroundObstacles(Vector3 point, Vector3 shift)
+        {
+            float distance = shift.magnitude;
+
+            if (_raycastService == null || distance < MIN_BEND_DISTANCE)
+                return point + shift;
+
+            Vector3 direction = shift / distance;
+            Ray ray = new Ray(point, direction);
+
+            return _raycastService.TryRaycast(ray, distance + _firstPersonClearance, _firstPersonObstacleMask, out RaycastHit hit)
+                ? point + direction * Mathf.Max(hit.distance - _firstPersonClearance, 0f)
+                : point + shift;
         }
 
         private void AnimateInflationFront(float target, float duration)

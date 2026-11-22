@@ -8,7 +8,10 @@ namespace _Project.Develop.Runtime.Common.Raycast
         private const int MAX_OVERLAPS = 8;
         private const int IGNORE_RAYCAST_LAYER = 2;
         private const string PROBE_NAME = "SphereProbe";
-        private const float MIN_STEP_RISE = 0.02f;
+        private const float MIN_STEP_TOP_NORMAL = 0.7f;
+        private const float HEADROOM_START = 0.005f;
+        private const float HEADROOM_DIAMETERS = 2f;
+        private const float HEADROOM_FIT_RATIO = 0.9f;
 
         private static readonly Vector3[] _escapeDirections =
         {
@@ -70,7 +73,8 @@ namespace _Project.Develop.Runtime.Common.Raycast
                 Ray stepRay = new Ray(freeCenter + Vector3.up * stepHeight, Vector3.down);
 
                 bool isStep = other.Raycast(stepRay, out RaycastHit stepTop, stepHeight + radius)
-                    && stepTop.point.y > freeCenter.y - radius + MIN_STEP_RISE;
+                    && stepTop.normal.y > MIN_STEP_TOP_NORMAL
+                    && HasHeadroom(other, stepTop.point, radius);
 
                 if (isStep)
                 {
@@ -87,6 +91,43 @@ namespace _Project.Develop.Runtime.Common.Raycast
             }
 
             return isPushed;
+        }
+
+        public bool IsAnyColliderNear(Vector3 center, float radius, LayerMask mask) =>
+            Physics.CheckSphere(center, radius, mask, QueryTriggerInteraction.Ignore);
+
+        public bool TryFindBody(Vector3 center, float radius, LayerMask mask, out Rigidbody body)
+        {
+            int count = Physics.OverlapSphereNonAlloc(center, radius, _overlaps, mask, QueryTriggerInteraction.Ignore);
+
+            for (int i = 0; i < count; i++)
+            {
+                body = _overlaps[i].attachedRigidbody;
+
+                if (body != null && body.isKinematic == false)
+                    return true;
+            }
+
+            body = null;
+            return false;
+        }
+
+        public bool HasHeadroom(Collider collider, Vector3 surfacePoint, float radius)
+        {
+            bool hitsBackfaces = Physics.queriesHitBackfaces;
+            Physics.queriesHitBackfaces = true;
+            Ray up = new Ray(surfacePoint + Vector3.up * HEADROOM_START, Vector3.up);
+            bool isBlocked = collider.Raycast(up, out RaycastHit _, radius * HEADROOM_DIAMETERS);
+            Physics.queriesHitBackfaces = hitsBackfaces;
+
+            if (isBlocked)
+                return false;
+
+            SphereCollider probe = GetProbe();
+            probe.radius = radius * HEADROOM_FIT_RATIO;
+            Vector3 center = surfacePoint + Vector3.up * (radius + HEADROOM_START);
+            Transform colliderTransform = collider.transform;
+            return Physics.ComputePenetration(probe, center, Quaternion.identity, collider, colliderTransform.position, colliderTransform.rotation, out Vector3 _, out float _) == false;
         }
 
         public bool TryEscapeHollow(Vector3 center, float radius, float distance, LayerMask mask, out Vector3 freeCenter)

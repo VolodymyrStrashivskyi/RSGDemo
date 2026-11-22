@@ -15,32 +15,82 @@ MonoBehaviour:
   <MaxLength>k__BackingField: 20
   <ParkedLength>k__BackingField: 1
   <PayOutMargin>k__BackingField: 1.5
-  <PayOutStretch>k__BackingField: 0.5
-  <MaxPayOutPerFrame>k__BackingField: 3
+  <PayOutStretchRatio>k__BackingField: 0.05
+  <MaxPayOutSpeed>k__BackingField: 8
   <LeashSlack>k__BackingField: 0.3
   <ReelCoreRadius>k__BackingField: 0.165
   <ReelWidth>k__BackingField: 0.56
   <CoilSegmentsPerTurn>k__BackingField: 24
   <ReelSpinSharpness>k__BackingField: 12
+  <ReelBrakeKick>k__BackingField: 25
+  <ReelBrakeTween>k__BackingField:
+    duration: 0.7
+    ease: 24
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
+    _useFixedUpdate: 0
+    _updateType: 0
   <Rope>k__BackingField:
     <SegmentLength>k__BackingField: 0.15
-    <ConstraintIterations>k__BackingField: 24
+    <Substeps>k__BackingField: 16
+    <VelocitySmoothing>k__BackingField: 0.35
     <AirDamping>k__BackingField: 0.98
     <GroundFriction>k__BackingField: 0.6
+    <StaticFrictionSpeed>k__BackingField: 0.25
     <BendStiffness>k__BackingField: 0.15
     <InflatedBendStiffness>k__BackingField: 0.6
     <GroundContactTolerance>k__BackingField: 0.02
     <GroundMask>k__BackingField:
       serializedVersion: 2
       m_Bits: 1
+    <CollisionMask>k__BackingField:
+      serializedVersion: 2
+      m_Bits: 1281
+    <TrailSpacing>k__BackingField: 0.3
+    <TrailPull>k__BackingField: 0.08
+    <HollowEscapeDistance>k__BackingField: 0.25
+    <LeashStretchRatio>k__BackingField: 0.08
+  <Tension>k__BackingField:
+    <ResistanceStartReach>k__BackingField: 0.85
+    <StretchTensionStart>k__BackingField: 0.04
+    <StrainSpeedRatio>k__BackingField: 0.3
+    <PullBackSpeed>k__BackingField: 0.8
+    <PullDirectionNodes>k__BackingField: 4
+    <Sharpness>k__BackingField: 6
+    <TautBendStiffness>k__BackingField: 0.9
+    <TrembleAmplitude>k__BackingField: 0.005
+    <TrembleFrequency>k__BackingField: 6
+    <PropPushForce>k__BackingField: 150
+    <PropMask>k__BackingField:
+      serializedVersion: 2
+      m_Bits: 1024
+    <PropProbeRatio>k__BackingField: 1.6
+  <NozzleFlowRate>k__BackingField: 25
+  <MinPressureSetting>k__BackingField: 0.25
+  <PressureStep>k__BackingField: 0.25
+  <StartPressureSetting>k__BackingField: 0.5
+  <RecoilScale>k__BackingField: 1
+  <FlowOpenSharpness>k__BackingField: 10
+  <FlowCloseSharpness>k__BackingField: 7
   <Radius>k__BackingField: 0.05
   <DeflatedRadiusRatio>k__BackingField: 0.75
   <DeflatedSquash>k__BackingField: 0.8
   <InflationBulge>k__BackingField: 0.2
   <InflationWaveWidth>k__BackingField: 0.15
   <EndTaperLength>k__BackingField: 0.15
-  <Sides>k__BackingField: 10
-  <Subdivisions>k__BackingField: 3
+  <Sides>k__BackingField: 14
+  <Subdivisions>k__BackingField: 4
+  <RibSpacing>k__BackingField: 0.3
+  <RibDepth>k__BackingField: 0.06
   <PaletteUv>k__BackingField: {x: 0.6875, y: 0.1875}
   <HoldOffset>k__BackingField: {x: 0, y: 0.01, z: -0.01}
   <AimPivot>k__BackingField: {x: 0, y: 0.01, z: -0.17}

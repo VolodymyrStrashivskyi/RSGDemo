@@ -27,7 +27,11 @@ namespace _Project.Develop.Runtime.Data.Configs
         public int CoilSegmentsPerTurn { get; private set; } = 24;
         [field: SerializeField, Min(0.1f), Tooltip("How fast the reel spins to catch up with the hose being pulled, 1/s")]
         public float ReelSpinSharpness { get; private set; } = 12f;
+        [field: SerializeField, Tooltip("How far the reel jerks back when the hose runs out, degrees")]
+        public float ReelBrakeKick { get; private set; } = 25f;
+        [field: SerializeField] public TweenSettings ReelBrakeTween { get; private set; } = new TweenSettings(0.7f, Ease.OutElastic);
         [field: SerializeField] public HoseRopeSettings Rope { get; private set; } = new HoseRopeSettings();
+        [field: SerializeField] public HoseTensionSettings Tension { get; private set; } = new HoseTensionSettings();
 
         [field: Header("Nozzle")]
         [field: SerializeField, Min(0f), Tooltip("Water the fully open nozzle draws from the pump at the highest pressure setting, L/s")]
@@ -58,9 +62,13 @@ namespace _Project.Develop.Runtime.Data.Configs
         public float InflationWaveWidth { get; private set; } = 0.15f;
         [field: SerializeField, Min(0f), Tooltip("Length from each end over which the hose narrows to fit the fittings, m")]
         public float EndTaperLength { get; private set; } = 0.15f;
-        [field: SerializeField, Range(3, 24)] public int Sides { get; private set; } = 10;
+        [field: SerializeField, Range(3, 24)] public int Sides { get; private set; } = 14;
         [field: SerializeField, Range(1, 8), Tooltip("Number of smoothing rings between rope nodes")]
-        public int Subdivisions { get; private set; } = 2;
+        public int Subdivisions { get; private set; } = 4;
+        [field: SerializeField, Min(0.05f), Tooltip("Distance between the woven bands along the hose, m")]
+        public float RibSpacing { get; private set; } = 0.3f;
+        [field: SerializeField, Range(0f, 0.3f), Tooltip("How far the woven bands stand out, as a share of the hose radius")]
+        public float RibDepth { get; private set; } = 0.06f;
         [field: SerializeField, Tooltip("UV of the color cell in Palette.png")]
         public Vector2 PaletteUv { get; private set; } = new Vector2(0.688f, 0.188f);
 

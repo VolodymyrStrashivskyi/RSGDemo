@@ -16,22 +16,48 @@ MonoBehaviour:
   <LeashSlack>k__BackingField: 0
   <Rope>k__BackingField:
     <SegmentLength>k__BackingField: 0.25
-    <ConstraintIterations>k__BackingField: 24
+    <Substeps>k__BackingField: 16
+    <VelocitySmoothing>k__BackingField: 0.35
     <AirDamping>k__BackingField: 0.98
     <GroundFriction>k__BackingField: 0.6
+    <StaticFrictionSpeed>k__BackingField: 0.25
     <BendStiffness>k__BackingField: 0.15
     <InflatedBendStiffness>k__BackingField: 0.6
     <GroundContactTolerance>k__BackingField: 0.02
     <GroundMask>k__BackingField:
       serializedVersion: 2
       m_Bits: 1
+    <CollisionMask>k__BackingField:
+      serializedVersion: 2
+      m_Bits: 1281
+    <TrailSpacing>k__BackingField: 0.3
+    <TrailPull>k__BackingField: 0.08
+    <HollowEscapeDistance>k__BackingField: 0.25
+    <LeashStretchRatio>k__BackingField: 0.08
+  <Tension>k__BackingField:
+    <ResistanceStartReach>k__BackingField: 0.85
+    <StretchTensionStart>k__BackingField: 0.04
+    <StrainSpeedRatio>k__BackingField: 0.3
+    <PullBackSpeed>k__BackingField: 0.8
+    <PullDirectionNodes>k__BackingField: 4
+    <Sharpness>k__BackingField: 6
+    <TautBendStiffness>k__BackingField: 0.9
+    <TrembleAmplitude>k__BackingField: 0.005
+    <TrembleFrequency>k__BackingField: 6
+    <PropPushForce>k__BackingField: 150
+    <PropMask>k__BackingField:
+      serializedVersion: 2
+      m_Bits: 1024
+    <PropProbeRatio>k__BackingField: 1.6
   <Radius>k__BackingField: 0.09
   <DeflatedRadiusRatio>k__BackingField: 0.55
   <DeflatedSquash>k__BackingField: 0.85
   <InflationBulge>k__BackingField: 0.25
   <EndTaperLength>k__BackingField: 0.3
-  <Sides>k__BackingField: 10
-  <Subdivisions>k__BackingField: 2
+  <Sides>k__BackingField: 14
+  <Subdivisions>k__BackingField: 4
+  <RibSpacing>k__BackingField: 0.3
+  <RibDepth>k__BackingField: 0.06
   <PaletteUv>k__BackingField: {x: 0.0625, y: 0.3125}
   <InflateDuration>k__BackingField: 1.4
   <DeflateDuration>k__BackingField: 0.9

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Utils;
+using PrimeTween;
 using UnityEngine;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
@@ -24,6 +25,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         private int _turnsPerLayer;
         private float _shownLength;
         private float _builtLength = -1f;
+        private float _brakeAngle;
+        private Tween _brakeTween;
 
         public Vector3 TakeoffPosition => _drum.TransformPoint(GetCoilPoint(_shownLength));
 
@@ -58,15 +61,23 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
             Refresh();
         }
 
+        public void Brake()
+        {
+            _brakeTween.Stop();
+            _brakeTween = Tween.Custom(this, _config.ReelBrakeKick, 0f, _config.ReelBrakeTween, (reel, angle) => reel._brakeAngle = angle);
+        }
+
         private void OnDestroy()
         {
+            _brakeTween.Stop();
+
             if (_coilTube != null)
                 Destroy(_coilTube.Mesh);
         }
 
         private void Refresh()
         {
-            _drum.localRotation = Quaternion.Euler(0f, 0f, (GetWoundAngle(_shownLength) - START_ANGLE) * Mathf.Rad2Deg);
+            _drum.localRotation = Quaternion.Euler(0f, 0f, (GetWoundAngle(_shownLength) - START_ANGLE) * Mathf.Rad2Deg + _brakeAngle);
 
             if (Mathf.Abs(_shownLength - _builtLength) < REBUILD_THRESHOLD)
                 return;
