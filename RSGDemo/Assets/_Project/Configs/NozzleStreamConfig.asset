@@ -19,14 +19,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1281
   <NozzleRadius>k__BackingField: 0.03
-  <SpreadRadius>k__BackingField: 0.85
+  <SpreadRadius>k__BackingField: 1.1
   <LowFlowRadiusScale>k__BackingField: 0.45
-  <BreakupTime>k__BackingField: 1.3
-  <SpreadExponent>k__BackingField: 1.8
+  <BreakupTime>k__BackingField: 0.9
+  <SpreadExponent>k__BackingField: 1.4
   <Sides>k__BackingField: 16
   <FadeFlow>k__BackingField: 0.15
   <EndFadeLength>k__BackingField: 0.8
-  <EndSplay>k__BackingField: 1.2
+  <EndSplay>k__BackingField: 2
   <PushForce>k__BackingField: 600
   <BrokenPushScale>k__BackingField: 0.35
   <FlickerAmplitude>k__BackingField: 0.05
