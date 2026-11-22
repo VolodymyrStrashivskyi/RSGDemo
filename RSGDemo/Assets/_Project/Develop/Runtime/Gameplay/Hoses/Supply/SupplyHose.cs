@@ -43,7 +43,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Supply
 
             _tension = new HoseTension(_rope, _config.Tension, _config.Rope, _raycastService);
             _coupling.SetLeash(new HoseLeash(_rope, _tension, _config.LeashSlack));
-            _view.Initialize(CreateTube(), CreateTube(), _config.InflationWaveWidth, _config.InflationBulge);
+            _view.Initialize(CreateTube(), CreateTube(), _config.InflationWaveWidth, _config.InflationBulge, HoseFillOrigin.End);
 
             _coupling.Attached += OnAttached;
             _coupling.Detached += OnDetached;

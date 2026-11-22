@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74abe43e6e7adec49b6ccc21cfe23df4, type: 3}
+  m_Name: MusicConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.MusicConfig
+  <Calm>k__BackingField: {fileID: 11400000, guid: bc63f1e79e92dd34b9721a1d4a51ebcb, type: 2}
+  <Tension>k__BackingField: {fileID: 11400000, guid: 87ba4932da5d142478ed81f094e7bb37, type: 2}
+  <Intense>k__BackingField: {fileID: 11400000, guid: e7a2a14d4cb2a374bbda4830e90f53f7, type: 2}
+  <TensionSpots>k__BackingField: 1
+  <IntenseSpots>k__BackingField: 15
+  <CalmDownShare>k__BackingField: 0.6
+  <SwitchDelay>k__BackingField: 6
+  <MinPlayTime>k__BackingField: 25
+  <FadeTime>k__BackingField: 6

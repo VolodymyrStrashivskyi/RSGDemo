@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14920e823e477904e85da937d7bc43c1, type: 3}
+  m_Name: InteractionAudioConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.InteractionAudioConfig
+  <PickUp>k__BackingField: {fileID: 11400000, guid: 76c6a1acffaa9ab4ea1214d466ac6d27, type: 2}
+  <Drop>k__BackingField: {fileID: 11400000, guid: 84c5b396ec22a944c99b722857fd71bc, type: 2}
+  <Connect>k__BackingField: {fileID: 11400000, guid: 477a0d49acd48e5408f3abea9814f60a, type: 2}
+  <ReelBrake>k__BackingField: {fileID: 11400000, guid: f4276a0e5c5348c46a4644dfa197fa38, type: 2}
+  <Valve>k__BackingField: {fileID: 11400000, guid: 8700537edaf49cb409c2015a970ba334, type: 2}
+  <Door>k__BackingField: {fileID: 11400000, guid: 8ee75c15f5444184cb5651d14ce57587, type: 2}

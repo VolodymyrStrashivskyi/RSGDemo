@@ -250,6 +250,7 @@ GameObject:
   - component: {fileID: 5203084364725986790}
   - component: {fileID: 7888143498591889304}
   - component: {fileID: 7499788047799004619}
+  - component: {fileID: 7057595386993467501}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -388,6 +389,20 @@ MonoBehaviour:
     useUnscaledTime: 0
     _useFixedUpdate: 0
     _updateType: 0
+--- !u!114 &7057595386993467501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6254516469900599130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 075c74432aea43443897266145c7add8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Firefighter.Body.FootstepAudio
+  _characterController: {fileID: 7332692727691074882}
+  _config: {fileID: 11400000, guid: 8854e9e502109de418b448a3f5300ded, type: 2}
 --- !u!1 &7402466585465462175
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using _Project.Develop.Runtime.Common.Audio;
 using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Fire;
 using VContainer.Unity;
@@ -13,13 +14,15 @@ namespace _Project.Develop.Runtime.Gameplay.UI.Hud.Dispatch
 
         private readonly IFireSystem _fireSystem;
         private readonly DispatchConfig _config;
+        private readonly IAudioService _audioService;
 
         private DispatchView _view;
         private bool _hasFireStarted;
         private int _shownCount = NOT_SHOWN;
 
-        public DispatchPresenter(IFireSystem fireSystem, DispatchConfig config)
+        public DispatchPresenter(IFireSystem fireSystem, DispatchConfig config, IAudioService audioService)
         {
+            _audioService = audioService;
             _fireSystem = fireSystem;
             _config = config;
         }
@@ -49,7 +52,10 @@ namespace _Project.Develop.Runtime.Gameplay.UI.Hud.Dispatch
             _shownCount = activeCount;
 
             if (activeCount == 0)
+            {
                 _view.ShowCompleted(_config.CompletedLabel);
+                _audioService.Play(_config.CompletedSound);
+            }
             else
                 _view.ShowProgress(_config.Objective, string.Format(CultureInfo.InvariantCulture, COUNT_FORMAT, activeCount, _config.BurningSuffix));
         }
@@ -67,10 +73,16 @@ namespace _Project.Develop.Runtime.Gameplay.UI.Hud.Dispatch
                 return;
 
             _hasFireStarted = true;
-            _view.Alert();
+            Alert();
         }
 
         private void OnSpotFlaredUp(FireSpot spot) =>
+            Alert();
+
+        private void Alert()
+        {
             _view.Alert();
+            _audioService.Play(_config.AlertSound);
+        }
     }
 }

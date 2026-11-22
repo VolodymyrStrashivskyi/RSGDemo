@@ -37,6 +37,7 @@ Unity **6000.5.3f1**, URP, PC (Windows).
 - **Анімації кодом** — PrimeTween 1.5.2, scoped registry `npmjs.org`, скоуп `com.kyrylokuzyk` (скіл `primetween`)
 - **UI-текст** — лише `TextMeshProUGUI` (`TMPro`, входить у `com.unity.ugui`); легасі `UnityEngine.UI.Text` не використовуємо. Ресурси TMP — `Assets/TextMesh Pro/`. Шрифт HUD — Barlow Condensed (OFL, `Art/Fonts/`, TMP-ассети `BarlowCondensed-Bold/SemiBold SDF`)
 - **UI-спрайти** — генеровані в `Art/Textures/UI/` (`UI_RoundedRect` — 9-slice для панелей і смуг, `UI_PanelCut` — панель зі зрізаним кутом, `UI_HazardStripe` — тайлова смуга небезпеки, `UI_Segment` — сегмент смуги, `UI_Icon_*` — іконки (крапля, бак, манометр, попередження, вогонь, галочка); заповнення смуги — через `anchorMax`, не `fillAmount`)
+- **Звук** — `IAudioService` (`Common/Audio/`, глобальний сервіс: короткі звуки з пулу джерел, петлі `SoundLoop` з гучністю, висотою, позицією й низькочастотним фільтром); кожен звук — асет `SoundCue` (`Configs/Audio/Cues/`: варіанти кліпів, розкид гучності й висоти, канал, відстань чутності), гучність каналів — `AudioConfig`. Кліпи — `Art/Audio/`, лише CC0 (джерела й автори — `Art/Audio/CREDITS.md`), підготовка — `Tools/Audio/build_audio.py` (ffmpeg + numpy/scipy)
 - **Ввід** — новий Input System; `activeInputHandler` = New only, старий `UnityEngine.Input` кине виняток у рантаймі
 - **Керування редактором** — Unity CLI + пакет `com.unity.pipeline`
 - **Дані** — параметри механік (шланги, бак, тиск, вогонь) у ScriptableObject, без хардкоду
@@ -58,7 +59,7 @@ Assets/_Project/
 ├── Develop/                      # УВЕСЬ код проєкту
 │   ├── Editor/                   # Editor-only (EntryPointSceneAutoLoader, розділення скла вікон); Fire/ — вікно генератора осередків вогню; Firefighter/ — збирання рук із рукавицями
 │   └── Runtime/                  # Код, що потрапляє в білд
-│       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/, Input/, Raycast/)
+│       ├── Common/               # Спільні сервіси з інтерфейсами, реєструються в DI (SceneManagement/, Input/, Raycast/, Audio/)
 │       ├── Data/Configs/         # Класи всіх ScriptableObject-конфігів (не в папках фіч)
 │       ├── Gameplay/             # Фічі-модулі прямо тут, без папки Features/
 │       │   ├── Firefighter/      # Модуль пожежника: координатор (інпут + синхронізація) у корені,

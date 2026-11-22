@@ -38,6 +38,7 @@ namespace _Project.Develop.Runtime.Infrastructure
         private IFireFactory _fireFactory;
         private IFireOutbreak _fireOutbreak;
         private IFireLightBudget _fireLightBudget;
+        private IFireAudio _fireAudio;
         private IFireCharVolume _fireCharVolume;
         private CrosshairPresenter _crosshairPresenter;
         private InteractionPromptPresenter _interactionPromptPresenter;
@@ -58,6 +59,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             IFireFactory fireFactory,
             IFireOutbreak fireOutbreak,
             IFireLightBudget fireLightBudget,
+            IFireAudio fireAudio,
             IFireCharVolume fireCharVolume,
             CrosshairPresenter crosshairPresenter,
             InteractionPromptPresenter interactionPromptPresenter,
@@ -76,6 +78,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             _fireFactory = fireFactory;
             _fireOutbreak = fireOutbreak;
             _fireLightBudget = fireLightBudget;
+            _fireAudio = fireAudio;
             _fireCharVolume = fireCharVolume;
             _crosshairPresenter = crosshairPresenter;
             _interactionPromptPresenter = interactionPromptPresenter;
@@ -100,6 +103,7 @@ namespace _Project.Develop.Runtime.Infrastructure
             FirstPersonCamera camera = await _cameraFactory.CreateAsync(body.HeadPoint);
             _firefighterCoordinator.Bind(body, camera);
             _fireLightBudget.SetViewer(camera.transform);
+            _fireAudio.SetListener(camera.transform);
 
             HudView hud = await _hudFactory.CreateAsync();
             _crosshairPresenter.Bind(hud.Crosshair);

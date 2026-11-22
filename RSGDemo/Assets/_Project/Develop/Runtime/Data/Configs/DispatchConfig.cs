@@ -20,6 +20,12 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField] public Color AccentColor { get; private set; } = new Color(1f, 0.69f, 0.13f);
         [field: SerializeField] public Color CompletedColor { get; private set; } = new Color(0.36f, 0.86f, 0.45f);
 
+        [field: Header("Sounds")]
+        [field: SerializeField, Tooltip("Played when the fire starts, flares up again or a spot burns out")]
+        public SoundCue AlertSound { get; private set; }
+        [field: SerializeField, Tooltip("Played when no spot burns any more")]
+        public SoundCue CompletedSound { get; private set; }
+
         [field: Header("Animations")]
         [field: SerializeField, Tooltip("How far off screen the panel starts, px")]
         public float SlideDistance { get; private set; } = 420f;

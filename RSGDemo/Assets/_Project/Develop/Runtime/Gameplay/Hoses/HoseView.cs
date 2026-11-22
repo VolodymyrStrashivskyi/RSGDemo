@@ -14,6 +14,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private const int END_NODES = 2;
         private const int DEFAULT_OBSTACLE_MASK = 1281;
         private const float MIN_BEND_DISTANCE = 0.0001f;
+        private const float HALF = 0.5f;
 
         [SerializeField] private MeshFilter _meshFilter;
         [SerializeField] private Renderer _renderer;
@@ -38,6 +39,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private float _waveWidth;
         private float _bulge;
         private float _inflationFront;
+        private HoseFillOrigin _fillOrigin;
+        private float _leadLength;
+        private float _hoseLength;
         private int _visibleLayer;
         private Tween _tween;
 
@@ -47,17 +51,32 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         public float InflationFront => _inflationFront;
 
-        public void Initialize(HoseTubeMesh tube, HoseTubeMesh firstPersonTube, float waveWidth, float bulge)
+        public bool IsFilledToFarEnd => _inflationFront * (1f + _waveWidth) >= 1f + _waveWidth * HALF;
+
+        public void Initialize(HoseTubeMesh tube, HoseTubeMesh firstPersonTube, float waveWidth, float bulge, HoseFillOrigin fillOrigin)
         {
             _tube = tube;
             _firstPersonTube = firstPersonTube;
             _waveWidth = waveWidth;
             _bulge = bulge;
-            _inflationAt = GetInflationFromEnd;
+            _fillOrigin = fillOrigin;
+            _inflationAt = GetInflationFromOrigin;
             _meshFilter.sharedMesh = tube.Mesh;
             _firstPersonMeshFilter.sharedMesh = firstPersonTube.Mesh;
             _visibleLayer = _renderer.gameObject.layer;
             _firstPersonRenderer.enabled = false;
+        }
+
+        public void SetFillSpan(float leadLength, float hoseLength)
+        {
+            _leadLength = leadLength;
+            _hoseLength = hoseLength;
+        }
+
+        public float GetInflationAtDistance(float distanceFromOrigin)
+        {
+            float spanLength = _leadLength + _hoseLength;
+            return EvaluateInflation(spanLength > 0f ? distanceFromOrigin / spanLength : 0f);
         }
 
         public void Render(IReadOnlyList<Vector3> points, Transform firstPersonEnd)
@@ -77,6 +96,12 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         public void Deflate(float duration) =>
             AnimateInflationFront(0f, duration);
+
+        public void ContinueInflating(float fullDuration) =>
+            AnimateInflationFront(1f, fullDuration * (1f - _inflationFront));
+
+        public void ContinueDeflating(float fullDuration) =>
+            AnimateInflationFront(0f, fullDuration * _inflationFront);
 
         private void OnDestroy()
         {
@@ -137,14 +162,28 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private void AnimateInflationFront(float target, float duration)
         {
             _tween.Stop();
+
+            if (duration <= 0f)
+            {
+                _inflationFront = target;
+                return;
+            }
+
             _tween = Tween.Custom(this, _inflationFront, target, duration, (view, value) => view._inflationFront = value, _inflationEase);
         }
 
-        private float GetInflationFromEnd(float normalizedDistance)
+        private float GetInflationFromOrigin(float normalizedDistance)
         {
-            float distanceFromEnd = 1f - normalizedDistance;
+            float shareFromOrigin = _fillOrigin == HoseFillOrigin.Start ? normalizedDistance : 1f - normalizedDistance;
+            float spanLength = _leadLength + _hoseLength;
+            float spanShare = spanLength > 0f ? (_leadLength + shareFromOrigin * _hoseLength) / spanLength : shareFromOrigin;
+            return EvaluateInflation(spanShare);
+        }
+
+        private float EvaluateInflation(float spanShare)
+        {
             float frontPosition = _inflationFront * (1f + _waveWidth);
-            float inflation = Mathf.SmoothStep(0f, 1f, (frontPosition - distanceFromEnd) / _waveWidth);
+            float inflation = Mathf.SmoothStep(0f, 1f, (frontPosition - spanShare) / _waveWidth);
             return inflation + GetFrontBulge(inflation);
         }
 

@@ -1,5 +1,7 @@
 using System;
+using _Project.Develop.Runtime.Common.Audio;
 using _Project.Develop.Runtime.Common.Raycast;
+using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Firefighter.Body;
 using _Project.Develop.Runtime.Gameplay.Interaction;
 using PrimeTween;
@@ -42,6 +44,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         private Grabber _grabber;
         private IRaycastService _raycastService;
+        private IAudioService _audioService;
+        private InteractionAudioConfig _audioConfig;
         private Transform _restParent;
         private GrabAnchor _anchor;
         private HoseLeash _leash;
@@ -51,8 +55,10 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         private Sequence _sequence;
 
         [Inject]
-        public void Construct(Grabber grabber, IRaycastService raycastService)
+        public void Construct(Grabber grabber, IRaycastService raycastService, IAudioService audioService, InteractionAudioConfig audioConfig)
         {
+            _audioService = audioService;
+            _audioConfig = audioConfig;
             _grabber = grabber;
             _raycastService = raycastService;
         }
@@ -132,7 +138,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
                 .Group(Tween.LocalPosition(transform, new TweenSettings<Vector3>(approachPosition, _approachTween)))
                 .Group(Tween.LocalRotation(transform, new TweenSettings<Quaternion>(Quaternion.identity, _approachTween)))
                 .Chain(Tween.LocalPosition(transform, new TweenSettings<Vector3>(Vector3.zero, _screwTween)))
-                .Group(Tween.LocalEulerAngles(transform, new TweenSettings<Vector3>(Vector3.zero, screwedEulerAngles, _screwTween))));
+                .Group(Tween.LocalEulerAngles(transform, new TweenSettings<Vector3>(Vector3.zero, screwedEulerAngles, _screwTween)))
+                .ChainCallback(this, coupling => coupling.PlayConnected()));
 
             Attached?.Invoke(socket, initiator);
         }
@@ -174,5 +181,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
             _sequence.Stop();
             _sequence = sequence;
         }
+
+        private void PlayConnected() =>
+            _audioService?.Play(_audioConfig.Connect, transform.position);
     }
 }

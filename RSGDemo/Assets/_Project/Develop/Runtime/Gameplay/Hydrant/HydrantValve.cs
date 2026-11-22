@@ -1,3 +1,5 @@
+using _Project.Develop.Runtime.Common.Audio;
+using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Interaction;
 using _Project.Develop.Runtime.Gameplay.WaterSupply;
 using PrimeTween;
@@ -15,11 +17,17 @@ namespace _Project.Develop.Runtime.Gameplay.Hydrant
         [SerializeField] private TweenSettings _turnTween = new TweenSettings(0.8f, Ease.InOutSine);
 
         private HydrantSource _hydrant;
+        private IAudioService _audioService;
+        private InteractionAudioConfig _audioConfig;
         private Tween _tween;
 
         [Inject]
-        public void Construct(HydrantSource hydrant) =>
+        public void Construct(HydrantSource hydrant, IAudioService audioService, InteractionAudioConfig audioConfig)
+        {
             _hydrant = hydrant;
+            _audioService = audioService;
+            _audioConfig = audioConfig;
+        }
 
         public bool CanInteract => _tween.isAlive == false;
 
@@ -35,6 +43,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hydrant
                 _hydrant.Open(initiator.name);
 
             Turn(direction);
+            _audioService.Play(_audioConfig.Valve, transform.position);
         }
 
         private void OnDestroy() =>

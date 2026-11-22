@@ -1,6 +1,9 @@
+using _Project.Develop.Runtime.Common.Audio;
+using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Gameplay.Interaction;
 using PrimeTween;
 using UnityEngine;
+using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.House.Doors
 {
@@ -19,6 +22,15 @@ namespace _Project.Develop.Runtime.Gameplay.House.Doors
         private float _swingDirection = 1f;
         private bool _isOpen;
         private Tween _tween;
+        private IAudioService _audioService;
+        private InteractionAudioConfig _audioConfig;
+
+        [Inject]
+        public void Construct(IAudioService audioService, InteractionAudioConfig audioConfig)
+        {
+            _audioService = audioService;
+            _audioConfig = audioConfig;
+        }
 
         public bool CanInteract => true;
 
@@ -32,6 +44,8 @@ namespace _Project.Develop.Runtime.Gameplay.House.Doors
                 Close();
             else
                 OpenAwayFrom(initiator.position);
+
+            _audioService?.Play(_audioConfig.Door, transform.position);
         }
 
         public void OpenAwayFrom(Vector3 position)

@@ -11,6 +11,7 @@ using _Project.Develop.Runtime.Gameplay.Hoses.Supply.Factory;
 using _Project.Develop.Runtime.Gameplay.Hydrant.Factory;
 using _Project.Develop.Runtime.Gameplay.Interaction;
 using _Project.Develop.Runtime.Gameplay.Level;
+using _Project.Develop.Runtime.Gameplay.Soundtrack;
 using _Project.Develop.Runtime.Gameplay.Street.Factory;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Crosshair;
 using _Project.Develop.Runtime.Gameplay.UI.Hud.Dispatch;
@@ -42,6 +43,9 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
         [SerializeField] private FireConfig _fireConfig;
         [SerializeField] private FireVisualConfig _fireVisualConfig;
         [SerializeField] private FireScenarioConfig _fireScenarioConfig;
+        [SerializeField] private FireAudioConfig _fireAudioConfig;
+        [SerializeField] private MusicConfig _musicConfig;
+        [SerializeField] private InteractionAudioConfig _interactionAudioConfig;
         [SerializeField] private WorldTag _worldTag;
 
         protected override void Configure(IContainerBuilder builder)
@@ -61,6 +65,9 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.RegisterInstance(_fireConfig);
             builder.RegisterInstance(_fireVisualConfig);
             builder.RegisterInstance(_fireScenarioConfig);
+            builder.RegisterInstance(_fireAudioConfig);
+            builder.RegisterInstance(_musicConfig);
+            builder.RegisterInstance(_interactionAudioConfig);
             builder.RegisterComponent(_worldTag);
 
             builder.Register<IStreetFactory, StreetFactory>(Lifetime.Singleton);
@@ -85,8 +92,11 @@ namespace _Project.Develop.Runtime.Infrastructure.DI
             builder.RegisterEntryPoint<FireLightBudget>().As<IFireLightBudget>();
             builder.RegisterEntryPoint<FireCharVolume>().As<IFireCharVolume>();
             builder.RegisterEntryPoint<FireMovingCharZones>();
+            builder.RegisterEntryPoint<FireAudio>().As<IFireAudio>();
+            builder.RegisterEntryPoint<MusicDirector>();
 
             builder.Register<Grabber>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<GrabAudio>();
             builder.Register<IInteractionScanner, InteractionScanner>(Lifetime.Singleton);
             builder.Register<CrosshairPresenter>(Lifetime.Singleton);
             builder.RegisterEntryPoint<InteractionPromptPresenter>().AsSelf();

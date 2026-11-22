@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac6796e4bd0955d47beda29a3cca4e85, type: 3}
+  m_Name: FireAudioConfig
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireAudioConfig
+  <SpotLoop>k__BackingField: {fileID: 11400000, guid: a668b65ea8b04e0488a4b28222b00ad1, type: 2}
+  <MaxVoices>k__BackingField: 6
+  <EmberLoudness>k__BackingField: 0.3
+  <MinLoudness>k__BackingField: 0.03
+  <DistanceFalloff>k__BackingField: 0.02
+  <PitchBySize>k__BackingField: {x: 1.1, y: 0.8}
+  <SizeRange>k__BackingField: {x: 0.3, y: 1.5}
+  <VolumeSharpness>k__BackingField: 4
+  <BlazeLoop>k__BackingField: {fileID: 11400000, guid: 902583b293f318f4fbff20c8c1152a7d, type: 2}
+  <FullBlazeHeat>k__BackingField: 12
+  <OcclusionMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 1
+  <OccludedCutoff>k__BackingField: 900
+  <OpenCutoff>k__BackingField: 22000
+  <OccludedVolume>k__BackingField: 0.55
+  <Ignited>k__BackingField: {fileID: 11400000, guid: 6ac590c561be9484a9851745017202a2, type: 2}
+  <Reignited>k__BackingField: {fileID: 11400000, guid: a1744c2fc96290343a62f063c26800e3, type: 2}
+  <BurnedOut>k__BackingField: {fileID: 11400000, guid: 2d4b99af9d825e64aa28f09d08301919, type: 2}
+  <Steam>k__BackingField: {fileID: 11400000, guid: 5be0eca24c0d3a246b922a7ca8f8cefa, type: 2}
+  <SteamMinHeat>k__BackingField: 0.15
+  <SteamInterval>k__BackingField: 0.35

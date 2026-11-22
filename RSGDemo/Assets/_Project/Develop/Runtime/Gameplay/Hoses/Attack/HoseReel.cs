@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using _Project.Develop.Runtime.Common.Audio;
 using _Project.Develop.Runtime.Data.Configs;
 using _Project.Develop.Runtime.Utils;
 using PrimeTween;
 using UnityEngine;
+using VContainer;
 
 namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 {
@@ -12,52 +14,75 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         private const float HALF = 0.5f;
         private const float START_ANGLE = Mathf.PI * 0.5f;
         private const float REBUILD_THRESHOLD = 0.001f;
+        private const float DIAMETER_PER_RADIUS = 2f;
 
         [SerializeField] private Transform _drum;
         [SerializeField] private MeshFilter _coilFilter;
 
         private readonly List<Vector3> _coilPoints = new List<Vector3>();
         private AttackHoseConfig _config;
+        private IAudioService _audioService;
+        private InteractionAudioConfig _audioConfig;
         private HoseTubeMesh _coilTube;
-        private float _hoseWidth;
+        private HoseView _water;
+        private float _turnSpacing;
         private float _layerStep;
         private float _halfTravel;
         private int _turnsPerLayer;
         private float _shownLength;
         private float _builtLength = -1f;
+        private float _paidOutLength;
+        private float _builtPaidOutLength = -1f;
+        private float _builtInflationFront = -1f;
         private float _brakeAngle;
         private Tween _brakeTween;
+
+        [Inject]
+        public void Construct(IAudioService audioService, InteractionAudioConfig audioConfig)
+        {
+            _audioService = audioService;
+            _audioConfig = audioConfig;
+        }
 
         public Vector3 TakeoffPosition => _drum.TransformPoint(GetCoilPoint(_shownLength));
 
         public Vector3 TakeoffDirection => _drum.TransformDirection(GetCoilTangent(_shownLength));
 
-        public void Initialize(AttackHoseConfig config, float woundLength)
+        public Vector3 TakeoffNormal => _drum.TransformDirection(_coilTube.EndNormal);
+
+        public float CoiledLength => _shownLength;
+
+        public void Initialize(AttackHoseConfig config, float woundLength, HoseView water)
         {
             _config = config;
-            _hoseWidth = config.Radius * config.DeflatedRadiusRatio * 2f;
-            _layerStep = _hoseWidth * config.DeflatedSquash;
-            _turnsPerLayer = Mathf.Max(1, Mathf.FloorToInt(config.ReelWidth / _hoseWidth));
-            _halfTravel = (config.ReelWidth - _hoseWidth) * HALF;
+            _water = water;
+            float deflatedRadius = config.Radius * config.DeflatedRadiusRatio;
+            _turnSpacing = config.Radius * DIAMETER_PER_RADIUS;
+            _layerStep = deflatedRadius * DIAMETER_PER_RADIUS * config.DeflatedSquash;
+            _turnsPerLayer = Mathf.Max(1, Mathf.FloorToInt(config.ReelWidth / _turnSpacing));
+            _halfTravel = (config.ReelWidth - _turnSpacing) * HALF;
 
             _coilTube = new HoseTubeMesh(
-                _hoseWidth * HALF,
-                _hoseWidth * HALF,
+                config.Radius,
+                deflatedRadius,
                 config.DeflatedSquash,
                 config.Sides,
                 1,
                 config.PaletteUv,
-                0f);
+                config.EndTaperLength);
 
+            _coilTube.SetRibs(config.RibSpacing, config.RibDepth);
+            _coilTube.SetFittedEnds(true, false);
             _coilFilter.sharedMesh = _coilTube.Mesh;
             _shownLength = woundLength;
             Refresh();
         }
 
-        public void Wind(float woundLength, float deltaTime)
+        public void Wind(float woundLength, float paidOutLength, float deltaTime)
         {
             float blend = Smoothing.GetBlend(_config.ReelSpinSharpness, deltaTime);
             _shownLength = Mathf.Lerp(_shownLength, woundLength, blend);
+            _paidOutLength = paidOutLength;
             Refresh();
         }
 
@@ -65,6 +90,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         {
             _brakeTween.Stop();
             _brakeTween = Tween.Custom(this, _config.ReelBrakeKick, 0f, _config.ReelBrakeTween, (reel, angle) => reel._brakeAngle = angle);
+            _audioService?.Play(_audioConfig.ReelBrake, _drum.position);
         }
 
         private void OnDestroy()
@@ -79,10 +105,16 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         {
             _drum.localRotation = Quaternion.Euler(0f, 0f, (GetWoundAngle(_shownLength) - START_ANGLE) * Mathf.Rad2Deg + _brakeAngle);
 
-            if (Mathf.Abs(_shownLength - _builtLength) < REBUILD_THRESHOLD)
+            bool isSameLength = Mathf.Abs(_shownLength - _builtLength) < REBUILD_THRESHOLD;
+            bool isSamePaidOut = Mathf.Abs(_paidOutLength - _builtPaidOutLength) < REBUILD_THRESHOLD;
+            bool isSameWater = Mathf.Abs(_water.InflationFront - _builtInflationFront) < REBUILD_THRESHOLD;
+
+            if (isSameLength && isSamePaidOut && isSameWater)
                 return;
 
             _builtLength = _shownLength;
+            _builtPaidOutLength = _paidOutLength;
+            _builtInflationFront = _water.InflationFront;
             BuildCoil();
         }
 
@@ -98,7 +130,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
             }
 
             _coilPoints.Add(GetCoilPoint(_shownLength));
-            _coilTube.Build(_coilPoints, GetDeflated);
+            _coilTube.SetRibPhase(_shownLength, _paidOutLength);
+            _coilTube.SetEndTangent(GetCoilTangent(_shownLength));
+            _coilTube.Build(_coilPoints, GetInflation);
         }
 
         private Vector3 GetCoilPoint(float distance)
@@ -163,7 +197,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         private static float GetAxialDirection(int layer) =>
             layer % 2 == 0 ? -1f : 1f;
 
-        private static float GetDeflated(float normalizedDistance) =>
-            0f;
+        private float GetInflation(float normalizedDistance) =>
+            _water.GetInflationAtDistance(normalizedDistance * _shownLength);
     }
 }

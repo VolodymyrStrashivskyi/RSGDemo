@@ -55,7 +55,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
 
         public Transform HoseEnd => _hoseEnd;
 
-        public Vector3 HoseDirection => IsHeld ? Vector3.Slerp(_hoseEnd.forward, Vector3.down, _config.HeldHoseDroop) : _hoseEnd.forward;
+        public Vector3 HoseDirection => IsHeld ? Vector3.Slerp(_hoseEnd.forward, Vector3.down, _config.HeldHoseDroop) : -transform.forward;
 
         public Transform Tip => _tip;
 

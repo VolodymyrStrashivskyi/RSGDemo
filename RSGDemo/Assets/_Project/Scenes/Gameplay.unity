@@ -517,6 +517,9 @@ MonoBehaviour:
   _fireConfig: {fileID: 11400000, guid: b0a97c0777c42cb4c9a5ef299a202fd4, type: 2}
   _fireVisualConfig: {fileID: 11400000, guid: 6a78a468f4a69254084794b135151037, type: 2}
   _fireScenarioConfig: {fileID: 11400000, guid: 35df18524c01c1c4ba2e89a0c557b31b, type: 2}
+  _fireAudioConfig: {fileID: 11400000, guid: c85aa14167a08b84ead7de633896b916, type: 2}
+  _musicConfig: {fileID: 11400000, guid: 61b342e64e3d8224a9cbcfbe21efbfd7, type: 2}
+  _interactionAudioConfig: {fileID: 11400000, guid: ec97d246df5694c4ca91fb28f3eb6813, type: 2}
   _worldTag: {fileID: 472227897}
 --- !u!1 &1421651622
 GameObject:

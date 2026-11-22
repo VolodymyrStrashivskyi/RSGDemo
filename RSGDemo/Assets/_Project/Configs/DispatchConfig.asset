@@ -21,6 +21,8 @@ MonoBehaviour:
   <AlertColor>k__BackingField: {r: 0.89, g: 0.25, b: 0.18, a: 1}
   <AccentColor>k__BackingField: {r: 1, g: 0.69, b: 0.13, a: 1}
   <CompletedColor>k__BackingField: {r: 0.36, g: 0.86, b: 0.45, a: 1}
+  <AlertSound>k__BackingField: {fileID: 11400000, guid: 7f3421d1f0b4adc428058e4ac3f67ea9, type: 2}
+  <CompletedSound>k__BackingField: {fileID: 11400000, guid: 1f8f126ede05e054fa2f31a20d3e9446, type: 2}
   <SlideDistance>k__BackingField: 420
   <SlideIn>k__BackingField:
     duration: 0.55

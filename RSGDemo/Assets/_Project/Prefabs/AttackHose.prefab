@@ -24925,6 +24925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.Hoses.Attack.NozzleOutflow
   _nozzle: {fileID: 4978314218295538695}
+  _hose: {fileID: 1299866206646810925}
   _stream: {fileID: 2681834923444138597}
 --- !u!1 &7142539513692061247
 GameObject:
@@ -25111,6 +25112,7 @@ GameObject:
   - component: {fileID: 7547948284977274787}
   - component: {fileID: 247487922059255349}
   - component: {fileID: 2681834923444138597}
+  - component: {fileID: 1410695064221887341}
   m_Layer: 0
   m_Name: NozzleStream
   m_TagString: Untagged
@@ -25220,6 +25222,20 @@ MonoBehaviour:
   _firstPersonRenderer: {fileID: 4935819796164677637}
   _firstPersonHiddenLayer: 6
   _firstPersonBlendLength: 2
+--- !u!114 &1410695064221887341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7666553107451485337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f187e85117416844bb5f094035125ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.WaterStream.WaterStreamAudio
+  _stream: {fileID: 2681834923444138597}
+  _config: {fileID: 11400000, guid: 4b0969d82a853404f8c91207001304e7, type: 2}
 --- !u!1 &8068118521010694612
 GameObject:
   m_ObjectHideFlags: 0

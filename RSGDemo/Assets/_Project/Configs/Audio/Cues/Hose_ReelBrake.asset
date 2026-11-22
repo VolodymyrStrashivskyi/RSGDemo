@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca6f944bb94302548a2bb2b3ec57a0b4, type: 3}
+  m_Name: Hose_ReelBrake
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.SoundCue
+  <Clips>k__BackingField:
+  - {fileID: 8300000, guid: 10903b690eba5d34294ff52f70b82f49, type: 3}
+  <Channel>k__BackingField: 0
+  <Volume>k__BackingField: {x: 0.8, y: 0.9}
+  <Pitch>k__BackingField: {x: 0.9, y: 1}
+  <SpatialBlend>k__BackingField: 1
+  <MinDistance>k__BackingField: 2
+  <MaxDistance>k__BackingField: 25
+  <Rolloff>k__BackingField: 0

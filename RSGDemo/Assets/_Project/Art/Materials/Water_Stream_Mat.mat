@@ -33,9 +33,9 @@ Material:
     - _SpecularPower: 64
     - _SpecularStrength: 1.4
     m_Colors:
-    - _CoreColor: {r: 0.16, g: 0.52, b: 0.96, a: 0.62}
-    - _EdgeColor: {r: 0.5, g: 0.8, b: 1, a: 0.95}
-    - _FoamColor: {r: 0.86, g: 0.95, b: 1, a: 1}
+    - _CoreColor: {r: 0.08, g: 0.33, b: 0.9, a: 0.66}
+    - _EdgeColor: {r: 0.28, g: 0.55, b: 1, a: 0.95}
+    - _FoamColor: {r: 0.7, g: 0.83, b: 1, a: 1}
     - _NoiseScale: {r: 2.2, g: 1.6, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

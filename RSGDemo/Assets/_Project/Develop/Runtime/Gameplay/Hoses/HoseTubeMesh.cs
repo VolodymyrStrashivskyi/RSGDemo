@@ -27,6 +27,16 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         private float _ribSpacing;
         private float _ribDepth;
+        private float _ribMaterialLength;
+        private float _ribOffset;
+        private bool _isStartFitted = true;
+        private bool _isEndFitted = true;
+        private bool _hasStartNormal;
+        private Vector3 _startNormal;
+        private bool _hasStartTangent;
+        private Vector3 _startTangent;
+        private bool _hasEndTangent;
+        private Vector3 _endTangent;
 
         public HoseTubeMesh(float inflatedRadius, float deflatedRadius, float deflatedSquash, int sides, int subdivisions, Vector2 paletteUv, float endTaperLength)
         {
@@ -44,10 +54,42 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         public Mesh Mesh { get; }
 
+        public Vector3 EndNormal { get; private set; }
+
         public void SetRibs(float spacing, float depth)
         {
             _ribSpacing = spacing;
             _ribDepth = depth;
+        }
+
+        public void SetRibPhase(float materialLength, float offset)
+        {
+            _ribMaterialLength = materialLength;
+            _ribOffset = offset;
+        }
+
+        public void SetFittedEnds(bool isStartFitted, bool isEndFitted)
+        {
+            _isStartFitted = isStartFitted;
+            _isEndFitted = isEndFitted;
+        }
+
+        public void SetStartNormal(Vector3 normal)
+        {
+            _startNormal = normal;
+            _hasStartNormal = true;
+        }
+
+        public void SetStartTangent(Vector3 tangent)
+        {
+            _startTangent = tangent.normalized;
+            _hasStartTangent = true;
+        }
+
+        public void SetEndTangent(Vector3 tangent)
+        {
+            _endTangent = tangent.normalized;
+            _hasEndTangent = true;
         }
 
         public void Build(IReadOnlyList<Vector3> points, Func<float, float> inflationAt)
@@ -117,7 +159,8 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
         {
             float length = _distances[_distances.Count - 1];
             Vector3 previousTangent = GetTangent(0);
-            Vector3 normal = GetInitialNormal(previousTangent);
+            Vector3 normal = GetStartNormal(previousTangent);
+            float materialScale = _ribMaterialLength > 0f && length > 0f ? _ribMaterialLength / length : 1f;
 
             for (int i = 0; i < _centers.Count; i++)
             {
@@ -127,8 +170,19 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
                 Vector3 side = Vector3.Cross(normal, tangent);
                 float inflation = length > 0f ? inflationAt(_distances[i] / length) * GetEndTaper(_distances[i], length) : 0f;
-                AddRing(_centers[i], side, normal, inflation, GetRibScale(length - _distances[i]));
+                AddRing(_centers[i], side, normal, inflation, GetRibScale((length - _distances[i]) * materialScale + _ribOffset));
             }
+
+            EndNormal = normal;
+        }
+
+        private Vector3 GetStartNormal(Vector3 tangent)
+        {
+            if (_hasStartNormal == false)
+                return GetInitialNormal(tangent);
+
+            Vector3 normal = Vector3.ProjectOnPlane(_startNormal, tangent);
+            return normal.sqrMagnitude < MIN_NORMAL_SQR_MAGNITUDE ? GetInitialNormal(tangent) : normal.normalized;
         }
 
         private void AddRing(Vector3 center, Vector3 side, Vector3 normal, float inflation, float ribScale)
@@ -159,15 +213,23 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         private float GetEndTaper(float distance, float length)
         {
-            float distanceToEnd = Mathf.Min(distance, length - distance);
-            return _endTaperLength > 0f ? Mathf.SmoothStep(0f, 1f, distanceToEnd / _endTaperLength) : 1f;
+            if (_endTaperLength <= 0f)
+                return 1f;
+
+            float distanceToStart = _isStartFitted ? distance : float.MaxValue;
+            float distanceToEnd = _isEndFitted ? length - distance : float.MaxValue;
+            return Mathf.SmoothStep(0f, 1f, Mathf.Min(distanceToStart, distanceToEnd) / _endTaperLength);
         }
 
         private void AddCaps()
         {
             int lastRingStart = (_centers.Count - 1) * _sides;
-            AddCap(0, -GetTangent(0), false);
-            AddCap(lastRingStart, GetTangent(_centers.Count - 1), true);
+
+            if (_isStartFitted)
+                AddCap(0, -GetTangent(0), false);
+
+            if (_isEndFitted)
+                AddCap(lastRingStart, GetTangent(_centers.Count - 1), true);
         }
 
         private void AddCap(int ringStart, Vector3 outward, bool isEnd)
@@ -234,6 +296,12 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses
 
         private Vector3 GetTangent(int index)
         {
+            if (_hasStartTangent && index == 0)
+                return _startTangent;
+
+            if (_hasEndTangent && index == _centers.Count - 1)
+                return _endTangent;
+
             int previous = Mathf.Max(index - 1, 0);
             int next = Mathf.Min(index + 1, _centers.Count - 1);
             return (_centers[next] - _centers[previous]).normalized;

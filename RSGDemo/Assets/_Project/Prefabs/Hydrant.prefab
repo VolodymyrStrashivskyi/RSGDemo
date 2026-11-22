@@ -19566,6 +19566,7 @@ GameObject:
   - component: {fileID: 8400133714541098501}
   - component: {fileID: 5627899524221536149}
   - component: {fileID: 5333868934950290386}
+  - component: {fileID: 6526944178658588665}
   m_Layer: 0
   m_Name: WaterStream
   m_TagString: Untagged
@@ -19674,6 +19675,20 @@ MonoBehaviour:
   _firstPersonRenderer: {fileID: 0}
   _firstPersonHiddenLayer: 0
   _firstPersonBlendLength: 2
+--- !u!114 &6526944178658588665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7957251070713917966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f187e85117416844bb5f094035125ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Gameplay.WaterStream.WaterStreamAudio
+  _stream: {fileID: 5333868934950290386}
+  _config: {fileID: 11400000, guid: 905b5adaa59f6f34c85067fa16a6b8c6, type: 2}
 --- !u!1 &9170760349645378319
 GameObject:
   m_ObjectHideFlags: 0
@@ -24574,6 +24589,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
+    - target: {fileID: -2879271098438254041, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4cea580463650434b8fa5c05d48a232c, type: 2}
     - target: {fileID: 919132149155446097, guid: 6d6bdf37040528e4897b481f9518091b, type: 3}
       propertyPath: m_Name
       value: Hydrant

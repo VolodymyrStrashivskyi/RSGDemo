@@ -49,6 +49,14 @@ namespace _Project.Develop.Runtime.Data.Configs
         [field: SerializeField, Min(0f), Tooltip("How fast the stream dies down after the nozzle closes or water runs out, 1/s")]
         public float FlowCloseSharpness { get; private set; } = 7f;
 
+        [field: Header("Charging")]
+        [field: SerializeField, Min(0.1f), Tooltip("Speed of the water front running from the reel hub through the coils to the nozzle after it opens, m/s")]
+        public float ChargeSpeed { get; private set; } = 25f;
+        [field: SerializeField, Min(0f), Tooltip("Shortest time the water takes to reach the nozzle, even on a short hose, s")]
+        public float MinChargeDuration { get; private set; } = 0.35f;
+        [field: SerializeField, Min(0.01f), Tooltip("Time a fully charged hose takes to go limp after the nozzle closes or water runs out, s")]
+        public float DischargeDuration { get; private set; } = 2.5f;
+
         [field: Header("Look")]
         [field: SerializeField, Min(0.01f), Tooltip("Hose radius under pressure, m")]
         public float Radius { get; private set; } = 0.05f;

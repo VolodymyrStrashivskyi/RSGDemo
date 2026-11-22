@@ -73,6 +73,10 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
 
         public float FullFlowRate { get; set; }
 
+        public bool HasImpact { get; private set; }
+
+        public Vector3 ImpactPoint { get; private set; }
+
         public void Burst() =>
             _spray.Emit(_config.BurstCount);
 
@@ -103,8 +107,11 @@ namespace _Project.Develop.Runtime.Gameplay.WaterStream
                 _mesh.Build(_points, _radii, _progress, _opacities);
             }
 
+            HasImpact = hasImpact;
+
             if (hasImpact)
             {
+                ImpactPoint = impact.point;
                 Push(impact);
                 ReportImpact(impact);
             }

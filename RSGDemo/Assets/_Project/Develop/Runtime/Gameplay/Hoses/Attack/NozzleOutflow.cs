@@ -12,6 +12,7 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
         private const float KILOGRAMS_PER_LITER = 1f;
 
         [SerializeField] private HoseNozzle _nozzle;
+        [SerializeField] private AttackHose _hose;
         [SerializeField] private WaterStreamView _stream;
 
         private IWaterSupplyChain _waterSupplyChain;
@@ -33,7 +34,9 @@ namespace _Project.Develop.Runtime.Gameplay.Hoses.Attack
             bool isOpen = _nozzle.IsOpen;
             _waterSupplyChain.SetDemand(isOpen ? _config.NozzleFlowRate * _nozzle.PressureSetting : 0f);
 
-            float targetFlow = isOpen ? GetDeliveredShare() : 0f;
+            float deliveredShare = GetDeliveredShare();
+            _hose.SetWaterIncoming(isOpen && deliveredShare > 0f);
+            float targetFlow = isOpen && _hose.IsCharged ? deliveredShare : 0f;
             float sharpness = targetFlow > _stream.Flow ? _config.FlowOpenSharpness : _config.FlowCloseSharpness;
             float blend = Smoothing.GetBlend(sharpness, Time.deltaTime);
             _stream.Flow = Mathf.Lerp(_stream.Flow, targetFlow, blend);
