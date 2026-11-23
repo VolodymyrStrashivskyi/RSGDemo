@@ -73,16 +73,11 @@ namespace _Project.Develop.Runtime.Gameplay.UI.Hud.Dispatch
                 return;
 
             _hasFireStarted = true;
-            Alert();
-        }
-
-        private void OnSpotFlaredUp(FireSpot spot) =>
-            Alert();
-
-        private void Alert()
-        {
             _view.Alert();
             _audioService.Play(_config.AlertSound);
         }
+
+        private void OnSpotFlaredUp(FireSpot spot) =>
+            _view.Alert();
     }
 }

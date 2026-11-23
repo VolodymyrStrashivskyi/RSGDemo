@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FireMaterial_Fabric
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireMaterialConfig
   <IgnitionHeat>k__BackingField: 0.5
-  <GrowthRate>k__BackingField: 0.06
+  <GrowthRate>k__BackingField: 0.08
   <BurnDuration>k__BackingField: 110
   <LitersToCool>k__BackingField: 8
   <LitersToDouse>k__BackingField: 3

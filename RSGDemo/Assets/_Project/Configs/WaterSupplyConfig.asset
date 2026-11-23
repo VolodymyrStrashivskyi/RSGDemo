@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: WaterSupplyConfig
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.WaterSupplyConfig
   <PumpPressure>k__BackingField: 8
-  <TankCapacity>k__BackingField: 1500
+  <TankCapacity>k__BackingField: 500
   <TankRefillRate>k__BackingField: 40

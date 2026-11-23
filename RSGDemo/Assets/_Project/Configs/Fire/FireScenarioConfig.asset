@@ -25,9 +25,41 @@ MonoBehaviour:
     <Delay>k__BackingField: 0
   - <SpotId>k__BackingField: Roof_Front
     <Delay>k__BackingField: 0
-  - <SpotId>k__BackingField: Facade_KitchenWindow
-    <Delay>k__BackingField: 30
-  - <SpotId>k__BackingField: Desk_Study
-    <Delay>k__BackingField: 45
+  - <SpotId>k__BackingField: DiningTable
+    <Delay>k__BackingField: 0
+  - <SpotId>k__BackingField: Armchair_A
+    <Delay>k__BackingField: 0
+  - <SpotId>k__BackingField: Wardrobe
+    <Delay>k__BackingField: 0
   - <SpotId>k__BackingField: Bed_Single
-    <Delay>k__BackingField: 75
+    <Delay>k__BackingField: 0
+  - <SpotId>k__BackingField: Facade_KitchenWindow
+    <Delay>k__BackingField: 10
+  - <SpotId>k__BackingField: ToyBox
+    <Delay>k__BackingField: 10
+  - <SpotId>k__BackingField: Desk_Study
+    <Delay>k__BackingField: 20
+  - <SpotId>k__BackingField: Chair_2
+    <Delay>k__BackingField: 20
+  - <SpotId>k__BackingField: LaundryBasket
+    <Delay>k__BackingField: 30
+  - <SpotId>k__BackingField: StorageBox_1
+    <Delay>k__BackingField: 30
+  - <SpotId>k__BackingField: RoofCat
+    <Delay>k__BackingField: 45
+  - <SpotId>k__BackingField: Bookshelf
+    <Delay>k__BackingField: 55
+  - <SpotId>k__BackingField: Armchair_Study
+    <Delay>k__BackingField: 55
+  - <SpotId>k__BackingField: Facade_F2_3
+    <Delay>k__BackingField: 70
+  - <SpotId>k__BackingField: Dresser
+    <Delay>k__BackingField: 70
+  - <SpotId>k__BackingField: FrontDoor
+    <Delay>k__BackingField: 90
+  - <SpotId>k__BackingField: Plant_Living
+    <Delay>k__BackingField: 90
+  - <SpotId>k__BackingField: Door_Bedroom
+    <Delay>k__BackingField: 110
+  - <SpotId>k__BackingField: Vanity
+    <Delay>k__BackingField: 110

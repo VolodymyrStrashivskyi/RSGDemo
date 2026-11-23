@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: FireMaterial_Wood
   m_EditorClassIdentifier: Assembly-CSharp::_Project.Develop.Runtime.Data.Configs.FireMaterialConfig
   <IgnitionHeat>k__BackingField: 0.35
-  <GrowthRate>k__BackingField: 0.03
+  <GrowthRate>k__BackingField: 0.04
   <BurnDuration>k__BackingField: 190
   <LitersToCool>k__BackingField: 15
   <LitersToDouse>k__BackingField: 5
   <ReigniteDelay>k__BackingField: 6
   <ReigniteHeat>k__BackingField: 0.5
   <SpreadRadius>k__BackingField: 3
-  <SpreadTime>k__BackingField: 65
+  <SpreadTime>k__BackingField: 60
   <SpreadMinHeat>k__BackingField: 0.5
